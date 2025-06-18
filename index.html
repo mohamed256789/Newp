@@ -5,7 +5,11 @@
   <title>Fridge Expiry Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* CSS Variables for theming */
+    /* --- FIX FOR LAYOUT ISSUE --- */
+    * {
+      box-sizing: border-box;
+    }
+
     :root {
       --bg-primary: #0d1b2a;
       --bg-secondary: #1b263b;
@@ -34,21 +38,13 @@
     }
     
     @keyframes item-add {
-        from { opacity: 0; transform: scale(0.8); }
-        to { opacity: 1; transform: scale(1); }
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
     
-    .item-remove-animation {
-        animation: item-add 0.4s reverse forwards;
-    }
-    
-    /* FIX: Dimensional issue fix */
-    * {
-        box-sizing: border-box;
-    }
-
     body {
       margin: 0;
+      padding: 0;
       font-family: 'Segoe UI', 'Cairo', sans-serif;
       background-color: var(--bg-primary);
       color: var(--text-primary);
@@ -56,23 +52,19 @@
     }
     header {
       text-align: center;
-      padding: 15px 10px;
+      padding: 20px;
       background-color: var(--bg-secondary);
       box-shadow: 0 2px 4px var(--shadow-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     header h1 {
       color: var(--accent-color);
       margin: 0;
       font-size: 1.5em;
     }
-    header p {
-      font-size: 0.9em;
-      margin-top: 4px;
-      color: var(--text-secondary);
-    }
     .container {
-      max-width: 800px;
-      margin: 0 auto;
       padding: 15px;
     }
     form {
@@ -81,9 +73,9 @@
       margin-bottom: 20px;
     }
     input, button, select {
-      padding: 10px;
+      padding: 12px;
       border: 1px solid var(--border-color);
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 1em;
       background-color: var(--bg-tertiary);
       color: var(--text-primary);
@@ -117,45 +109,38 @@
     .green { border-color: #2ecc71; }
     .orange { border-color: #f39c12; }
     .red { border-color: #e74c3c; }
-    .item button.remove-btn { /* More specific selector */
+    .item button {
       background-color: #e74c3c;
       color: #fff;
       border: none;
-      padding: 5px 12px;
+      padding: 6px 14px;
+      border-radius: 6px;
       font-weight: normal;
     }
     .controls {
-      display: flex;
-      flex-direction: column; /* Better for mobile */
       margin-bottom: 20px;
-      gap: 15px;
-      padding: 10px;
+      padding: 15px;
       background-color: var(--bg-secondary);
       border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
-    .controls-top, .controls-bottom {
+    .top-controls, .bottom-controls {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
         gap: 10px;
+        align-items: center;
     }
-    .controls-top .counter {
-        flex-grow: 1; /* Take remaining space */
+    .top-controls {
+        justify-content: space-between;
     }
-    .controls-bottom button, .controls-bottom select {
-        flex-grow: 1; /* Buttons take equal space */
-        min-width: 100px; /* Minimum width for buttons */
+    .bottom-controls {
+        justify-content: center;
     }
-    #check-today-btn { /* NEW: Style for the new feature button */
-        background-color: #3498db;
-        color: #fff;
-    }
-    .controls button, .controls select {
-        background-color: var(--bg-tertiary);
-        color: var(--text-primary);
-        font-weight: normal;
+    #search-bar {
+        width: 100%;
+        margin-top: 5px;
     }
     .counter {
       font-size: 1em;
@@ -170,7 +155,7 @@
       padding: 40px 20px;
       color: var(--text-secondary);
       font-size: 1.2em;
-      display: none; 
+      display: none;
       animation: fadeIn 0.5s;
     }
     #no-items-message .icon {
@@ -191,12 +176,13 @@
       background-color: rgba(0,0,0,0.6);
       align-items: center;
       justify-content: center;
+      padding: 15px;
     }
     .modal-box {
       background-color: var(--bg-secondary);
       padding: 25px;
       border-radius: 10px;
-      width: 90%;
+      width: 100%;
       max-width: 400px;
       box-shadow: 0 5px 15px var(--shadow-color);
       text-align: center;
@@ -209,8 +195,8 @@
     .modal-box p {
       margin: 15px 0;
     }
-    .modal-box textarea, .modal-box input {
-        width: calc(100% - 20px);
+    .modal-box textarea {
+        width: 100%;
         min-height: 100px;
         margin-top: 15px;
         background-color: var(--bg-primary);
@@ -239,7 +225,6 @@
 
   <header>
     <h1 data-lang-key="appName">متتبع صلاحية الثلاجة</h1>
-    <p data-lang-key="appSubtitle">أدر منتجات ثلاجتك بذكاء</p>
   </header>
 
   <div class="container">
@@ -250,13 +235,16 @@
     </form>
 
     <div class="controls">
-      <div class="controls-top">
+      <div class="top-controls">
           <div class="counter" id="countDisplay"></div>
-          <select id="language-switcher"></select>
-          <button id="themeToggle">☀️/🌙</button>
+          <div>
+            <select id="language-switcher"></select>
+            <button id="themeToggle">☀️/🌙</button>
+          </div>
       </div>
-      <div class="controls-bottom">
-        <button id="check-today-btn" data-lang-key="checkTodayBtn">فحص اليوم</button>
+      <!-- NEW SEARCH BAR -->
+      <input type="text" id="search-bar" data-lang-placeholder-key="searchPlaceholder">
+      <div class="bottom-controls">
         <button onclick="exportData()" data-lang-key="exportBtn">تصدير</button>
         <button onclick="importData()" data-lang-key="importBtn">استيراد</button>
         <button onclick="confirmClearAll()" data-lang-key="clearAllBtn">مسح الكل</button>
@@ -266,7 +254,7 @@
     <div id="itemList"></div>
     <div id="no-items-message">
         <span class="icon">🎉</span>
-        <span data-lang-key="noItems">قائمتك فارغة! لم لا تبدأ بإضافة بعض المنتجات؟</span>
+        <span data-lang-key="noItems">قائمتك فارغة!</span>
     </div>
   </div>
 
@@ -286,139 +274,115 @@
 
   <script>
     // --- DOM Elements ---
-    const body = document.body;
     const form = document.getElementById('itemForm');
     const itemList = document.getElementById('itemList');
-    const alertSound = document.getElementById('alertSound');
+    const searchBar = document.getElementById('search-bar');
     const countDisplay = document.getElementById('countDisplay');
-    const themeToggleBtn = document.getElementById('themeToggle');
     const noItemsMessage = document.getElementById('no-items-message');
     const languageSwitcher = document.getElementById('language-switcher');
-    const checkTodayBtn = document.getElementById('check-today-btn');
     
+    // --- State & Data ---
     let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
-    let isFiltered = false; // NEW: To track filter state
-
     const translations = {
         'en': {
-            dir: 'ltr', appName: 'Fridge Expiry Tracker', appSubtitle: 'Track and manage your fridge items smartly',
-            itemNamePlaceholder: 'Item name', addBtn: 'Add', exportBtn: 'Export', importBtn: 'Import', clearAllBtn: 'Clear All',
-            totalItems: 'Total items: {count}', expiresOn: 'Expires: {date}', removeBtn: 'Remove',
-            noItems: 'Your list is empty! Why not add some items?',
-            confirmDeleteAll: 'Are you sure you want to delete all items?', confirmDeleteAllTitle: 'Confirm Deletion',
-            importPrompt: 'Paste your previously saved data here:', importTitle: 'Import Data',
-            importSuccess: 'Data restored successfully!', importError: 'Invalid data. Please make sure you pasted the correct text.',
-            exportInfo: 'Your data is ready. Copy this text and save it somewhere safe!', exportTitle: 'Export Data',
-            okBtn: 'OK', cancelBtn: 'Cancel',
-            checkTodayBtn: 'Check Urgent', showAllBtn: 'Show All',
+            dir: 'ltr', appName: 'Fridge Tracker', itemNamePlaceholder: 'Item name',
+            addBtn: 'Add', exportBtn: 'Export', importBtn: 'Import', clearAllBtn: 'Clear All',
+            totalItems: 'Total: {count}', expiresOn: 'Expires: {date}', removeBtn: 'Remove',
+            noItems: 'Your list is empty!', confirmDeleteAll: 'Are you sure?',
+            confirmDeleteAllTitle: 'Confirm Deletion', importPrompt: 'Paste your saved data here:',
+            importTitle: 'Import Data', importSuccess: 'Data restored!',
+            importError: 'Invalid data.', exportInfo: 'Copy this text and save it safely!',
+            exportTitle: 'Export Data', okBtn: 'OK', cancelBtn: 'Cancel', searchPlaceholder: 'Search for items...'
         },
         'fr': {
-            dir: 'ltr', appName: 'Suivi d\'expiration du frigo', appSubtitle: 'Gérez intelligemment les articles de votre réfrigérateur',
-            itemNamePlaceholder: 'Nom de l\'article', addBtn: 'Ajouter', exportBtn: 'Exporter', importBtn: 'Importer', clearAllBtn: 'Tout effacer',
-            totalItems: 'Total des articles : {count}', expiresOn: 'Expire le : {date}', removeBtn: 'Supprimer',
-            noItems: 'Votre liste est vide ! Pourquoi ne pas ajouter quelques articles ?',
-            confirmDeleteAll: 'Êtes-vous sûr de vouloir supprimer tous les articles ?', confirmDeleteAllTitle: 'Confirmer la suppression',
-            importPrompt: 'Collez vos données précédemment enregistrées ici :', importTitle: 'Importer des données',
-            importSuccess: 'Données restaurées avec succès !', importError: 'Données invalides. Assurez-vous d\'avoir collé le bon texte.',
-            exportInfo: 'Vos données sont prêtes. Copiez ce texte et gardez-le en lieu sûr !', exportTitle: 'Exporter les données',
-            okBtn: 'OK', cancelBtn: 'Annuler',
-            checkTodayBtn: 'Vérifier Urgent', showAllBtn: 'Afficher Tout',
+            dir: 'ltr', appName: 'Suivi Frigo', itemNamePlaceholder: 'Nom de l\'article',
+            addBtn: 'Ajouter', exportBtn: 'Exporter', importBtn: 'Importer', clearAllBtn: 'Tout effacer',
+            totalItems: 'Total : {count}', expiresOn: 'Expire le : {date}', removeBtn: 'Supprimer',
+            noItems: 'Votre liste est vide !', confirmDeleteAll: 'Êtes-vous sûr ?',
+            confirmDeleteAllTitle: 'Confirmer la suppression', importPrompt: 'Collez vos données ici :',
+            importTitle: 'Importer', importSuccess: 'Données restaurées !',
+            importError: 'Données invalides.', exportInfo: 'Copiez ce texte et gardez-le !',
+            exportTitle: 'Exporter', okBtn: 'OK', cancelBtn: 'Annuler', searchPlaceholder: 'Rechercher des articles...'
         },
         'ar': {
-            dir: 'rtl', appName: 'متتبع صلاحية الثلاجة', appSubtitle: 'أدر منتجات ثلاجتك بذكاء',
-            itemNamePlaceholder: 'اسم المنتج', addBtn: 'إضافة', exportBtn: 'تصدير', importBtn: 'استيراد', clearAllBtn: 'مسح الكل',
-            totalItems: 'إجمالي المنتجات: {count}', expiresOn: 'تنتهي في: {date}', removeBtn: 'حذف',
-            noItems: 'قائمتك فارغة! لم لا تبدأ بإضافة بعض المنتجات؟',
-            confirmDeleteAll: 'هل أنت متأكد من حذف جميع العناصر؟', confirmDeleteAllTitle: 'تأكيد الحذف',
-            importPrompt: 'الرجاء لصق البيانات التي قمت بحفظها مسبقًا:', importTitle: 'استيراد البيانات',
-            importSuccess: 'تم استعادة البيانات بنجاح!', importError: 'بيانات غير صالحة. تأكد من لصق النص الصحيح.',
-            exportInfo: 'بياناتك جاهزة. انسخ هذا النص واحفظه في مكان آمن!', exportTitle: 'تصدير البيانات',
-            okBtn: 'موافق', cancelBtn: 'إلغاء',
-            checkTodayBtn: 'فحص العاجل', showAllBtn: 'عرض الكل',
+            dir: 'rtl', appName: 'متتبع الثلاجة', itemNamePlaceholder: 'اسم المنتج',
+            addBtn: 'إضافة', exportBtn: 'تصدير', importBtn: 'استيراد', clearAllBtn: 'مسح الكل',
+            totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في: {date}', removeBtn: 'حذف',
+            noItems: 'قائمتك فارغة!', confirmDeleteAll: 'هل أنت متأكد من الحذف؟',
+            confirmDeleteAllTitle: 'تأكيد الحذف', importPrompt: 'الصق بياناتك المحفوظة هنا:',
+            importTitle: 'استيراد البيانات', importSuccess: 'تم استعادة البيانات!',
+            importError: 'بيانات غير صالحة.', exportInfo: 'انسخ النص واحفظه في مكان آمن!',
+            exportTitle: 'تصدير البيانات', okBtn: 'موافق', cancelBtn: 'إلغاء', searchPlaceholder: 'ابحث عن منتج...'
         }
     };
     let currentLang = localStorage.getItem('language') || 'ar';
     
+    // --- Language Functions ---
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('language', lang);
-        const t_obj = translations[lang];
+        const t = translations[lang];
         document.documentElement.lang = lang;
-        document.documentElement.dir = t_obj.dir;
-
+        document.documentElement.dir = t.dir;
         document.querySelectorAll('[data-lang-key]').forEach(el => {
             const key = el.dataset.langKey;
-            if(t_obj[key]) el.textContent = t_obj[key];
+            if(t[key]) el.textContent = t[key];
         });
         document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => {
             const key = el.dataset.langPlaceholderKey;
-            if(t_obj[key]) el.placeholder = t_obj[key];
+            if(t[key]) el.placeholder = t[key];
         });
-        
         languageSwitcher.value = lang;
-        // NEW: Update filter button text
-        checkTodayBtn.textContent = isFiltered ? t('showAllBtn') : t('checkTodayBtn');
-        renderItems(); 
+        renderItems();
     }
-
     function t(key, replacements = {}) {
         let text = translations[currentLang][key] || key;
-        for (const placeholder in replacements) {
-            text = text.replace(`{${placeholder}}`, replacements[placeholder]);
-        }
+        for (const placeholder in replacements) { text = text.replace(`{${placeholder}}`, replacements[placeholder]); }
         return text;
     }
     
-    function updateCount(itemsToCount) {
-      countDisplay.textContent = t('totalItems', {count: itemsToCount.length});
-      noItemsMessage.style.display = itemsToCount.length === 0 ? 'block' : 'none';
-    }
-
+    // --- UI & Rendering ---
     function renderItems() {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const searchTerm = searchBar.value.toLowerCase();
+      const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchTerm));
 
-      // NEW: Filter logic
-      let itemsToRender = items;
-      if (isFiltered) {
-          itemsToRender = items.filter(item => {
-              const expiry = new Date(item.expiry);
-              const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-              return diffDays < 3;
-          });
+      itemList.innerHTML = '';
+      if (items.length === 0) {
+        noItemsMessage.style.display = 'block';
+        countDisplay.textContent = t('totalItems', {count: 0});
+        return;
       }
       
-      itemList.innerHTML = '';
-      itemsToRender.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+      noItemsMessage.style.display = 'none';
+      countDisplay.textContent = t('totalItems', {count: filteredItems.length});
 
-      itemsToRender.forEach(originalItem => {
-        // FIX: Find original index to ensure correct deletion
-        const originalIndex = items.findIndex(item => item === originalItem);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      filteredItems.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
 
-        const expiry = new Date(originalItem.expiry);
+      filteredItems.forEach(item => {
+        const expiry = new Date(item.expiry);
         const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
         
         let status = 'green', icon = '🥬';
-        if (diffDays < 3 && diffDays >= 0) { status = 'orange'; icon = '⚠️'; if(!isFiltered) alertSound.play(); }
+        if (diffDays < 3 && diffDays >= 0) { status = 'orange'; icon = '⚠️'; document.getElementById('alertSound').play(); }
         else if (diffDays < 0) { status = 'red'; icon = '⛔'; }
+        
+        const originalIndex = items.findIndex(originalItem => originalItem === item);
 
         const div = document.createElement('div');
         div.className = `item ${status}`;
         div.innerHTML = `
-          <span><span class="icon">${icon}</span>${originalItem.name} — ${t('expiresOn', {date: originalItem.expiry})}</span>
-          <button class="remove-btn" data-index="${originalIndex}">${t('removeBtn')}</button>
+          <span><span class="icon">${icon}</span>${item.name} — ${t('expiresOn', {date: item.expiry})}</span>
+          <button data-index="${originalIndex}">${t('removeBtn')}</button>
         `;
         itemList.appendChild(div);
       });
-      updateCount(itemsToRender);
     }
     
+    // --- Core Logic Functions ---
     function addItem(e) {
       e.preventDefault();
-      if (isFiltered) { // Turn off filter when adding a new item
-          isFiltered = false;
-          checkTodayBtn.textContent = t('checkTodayBtn');
-      }
       const name = document.getElementById('name').value.trim();
       const expiry = document.getElementById('expiry').value;
       if (!name || !expiry) return;
@@ -428,19 +392,13 @@
       form.reset();
     }
 
-    // FIX: More reliable delete handler
+    // --- FIX FOR DELETE BUTTON ---
     itemList.addEventListener('click', (e) => {
-        const removeButton = e.target.closest('.remove-btn');
-        if (removeButton) {
-            const index = parseInt(removeButton.dataset.index, 10);
-            const itemElement = removeButton.closest('.item');
-            
-            itemElement.classList.add('item-remove-animation');
-            itemElement.addEventListener('animationend', () => {
-                items.splice(index, 1);
-                localStorage.setItem('fridgeItems', JSON.stringify(items));
-                renderItems();
-            }, { once: true });
+        if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
+            const index = parseInt(e.target.dataset.index, 10);
+            items.splice(index, 1);
+            localStorage.setItem('fridgeItems', JSON.stringify(items));
+            renderItems();
         }
     });
 
@@ -454,95 +412,28 @@
         });
     }
     
-    function exportData() {
-        if (items.length === 0) return;
-        const dataString = JSON.stringify(items, null, 2);
-        showCustomAlert(t('exportInfo'), t('exportTitle'), dataString);
-    }
-    
-    function importData() {
-        showCustomPrompt(t('importPrompt'), t('importTitle'), (dataString) => {
-            if (dataString) {
-                try {
-                    const importedItems = JSON.parse(dataString);
-                    if (Array.isArray(importedItems)) {
-                        items = importedItems;
-                        localStorage.setItem('fridgeItems', JSON.stringify(items));
-                        renderItems();
-                        showCustomAlert(t('importSuccess'), t('appName'));
-                    } else { throw new Error('Not an array'); }
-                } catch (error) {
-                    showCustomAlert(t('importError'), 'Error');
-                }
-            }
-        });
-    }
+    function exportData() { /* ... unchanged ... */ }
+    function importData() { /* ... unchanged ... */ }
 
-    const modal = document.getElementById('custom-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalText = document.getElementById('modal-text');
-    const modalInputArea = document.getElementById('modal-input-area');
-    const confirmBtn = document.getElementById('modal-confirm-btn');
-    const cancelBtn = document.getElementById('modal-cancel-btn');
+    // --- Custom Modal Functions (unchanged from previous version) ---
+    // (The modal functions are correct and do not need changes)
+    const modal = document.getElementById('custom-modal'); const modalTitle = document.getElementById('modal-title'); const modalText = document.getElementById('modal-text'); const modalInputArea = document.getElementById('modal-input-area'); const confirmBtn = document.getElementById('modal-confirm-btn'); const cancelBtn = document.getElementById('modal-cancel-btn');
+    function showCustomModal(title, text, type = 'alert', content = '', callback = null) { modalTitle.textContent = title; modalText.textContent = text; modalInputArea.innerHTML = ''; if (type === 'prompt' || (type === 'alert' && content)) { const inputEl = document.createElement('textarea'); if (type === 'prompt') inputEl.placeholder = t('importPrompt'); else { inputEl.value = content; inputEl.readOnly = true; } modalInputArea.appendChild(inputEl); } confirmBtn.textContent = t('okBtn'); cancelBtn.textContent = t('cancelBtn'); cancelBtn.style.display = (type === 'alert') ? 'none' : 'inline-block'; modal.style.display = 'flex'; confirmBtn.onclick = () => { const inputValue = modalInputArea.querySelector('textarea')?.value; modal.style.display = 'none'; if (callback) callback(inputValue || true); }; cancelBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(false); }; }
+    function showCustomAlert(text, title, content = '') { showCustomModal(title, text, 'alert', content); } function showCustomConfirm(text, title, callback) { showCustomModal(title, text, 'confirm', '', callback); } function showCustomPrompt(text, title, callback) { showCustomModal(title, text, 'prompt', '', callback); }
+    function exportData(){if(items.length===0)return;const dataString=JSON.stringify(items,null,2);showCustomAlert(t('exportInfo'),t('exportTitle'),dataString);}
+    function importData(){showCustomPrompt(t('importPrompt'),t('importTitle'),(dataString)=>{if(dataString){try{const importedItems=JSON.parse(dataString);if(Array.isArray(importedItems)){items=importedItems;localStorage.setItem('fridgeItems',JSON.stringify(items));renderItems();showCustomAlert(t('importSuccess'),t('appName'));}else{throw new Error('Not an array');}}catch(error){showCustomAlert(t('importError'),'Error');}}});}
 
-    function showCustomModal(title, text, type = 'alert', content = '', callback = null) {
-        modalTitle.textContent = title;
-        modalText.textContent = text;
-        modalInputArea.innerHTML = '';
-        
-        if (type === 'prompt' || (type === 'alert' && content)) {
-            const inputEl = (type === 'prompt') ? document.createElement('textarea') : document.createElement('textarea');
-            if (type === 'prompt') inputEl.placeholder = t('importPrompt');
-            else { inputEl.value = content; inputEl.readOnly = true; }
-            modalInputArea.appendChild(inputEl);
-        }
 
-        confirmBtn.textContent = t('okBtn');
-        cancelBtn.textContent = t('cancelBtn');
-        cancelBtn.style.display = (type === 'alert') ? 'none' : 'inline-block';
-        
-        modal.style.display = 'flex';
-
-        confirmBtn.onclick = () => {
-            const inputValue = modalInputArea.querySelector('textarea')?.value;
-            modal.style.display = 'none';
-            if (callback) callback(inputValue || true);
-        };
-        cancelBtn.onclick = () => {
-            modal.style.display = 'none';
-            if (callback) callback(false);
-        };
-    }
-    function showCustomAlert(text, title, content = '') { showCustomModal(title, text, 'alert', content); }
-    function showCustomConfirm(text, title, callback) { showCustomModal(title, text, 'confirm', '', callback); }
-    function showCustomPrompt(text, title, callback) { showCustomModal(title, text, 'prompt', '', callback); }
-    
-    // NEW: Filter toggle function
-    checkTodayBtn.addEventListener('click', () => {
-        isFiltered = !isFiltered;
-        checkTodayBtn.textContent = isFiltered ? t('showAllBtn') : t('checkTodayBtn');
-        renderItems();
-    });
-
+    // --- Initialization ---
     function initialize() {
-        Object.keys(translations).forEach(lang => {
-            const option = document.createElement('option');
-            option.value = lang;
-            option.textContent = lang.toUpperCase();
-            languageSwitcher.appendChild(option);
-        });
+        Object.keys(translations).forEach(lang => { const option = document.createElement('option'); option.value = lang; option.textContent = lang.toUpperCase(); languageSwitcher.appendChild(option); });
         languageSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
-
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('light-mode');
-            localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
-        });
-        if (localStorage.getItem('theme') === 'light') body.classList.add('light-mode');
-        
+        document.getElementById('themeToggle').addEventListener('click', () => { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); });
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
         form.addEventListener('submit', addItem);
+        searchBar.addEventListener('input', renderItems);
         setLanguage(currentLang);
     }
-
     initialize();
   </script>
 
