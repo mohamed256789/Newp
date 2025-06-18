@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Fridge Expiry Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* CSS Variables for theming */
+    :root {
+      --bg-primary: #0d1b2a;
+      --bg-secondary: #1b263b;
+      --bg-tertiary: #415a77;
+      --text-primary: #fff;
+      --text-secondary: #aaa;
+      --accent-color: gold;
+      --accent-text: #0d1b2a;
+      --border-color: #444;
+      --shadow-color: rgba(0,0,0,0.2);
+    }
+
+    body.light-mode {
+      --bg-primary: #f4f4f9;
+      --bg-secondary: #e9ecef;
+      --bg-tertiary: #ffffff;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --border-color: #ccc;
+      --shadow-color: rgba(0,0,0,0.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes item-add {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .item-remove-animation {
+        animation: item-add 0.4s reverse forwards;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', 'Cairo', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s, color 0.3s;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--bg-secondary);
+      box-shadow: 0 2px 4px var(--shadow-color);
+    }
+    header h1 {
+      color: var(--accent-color);
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input, button, select {
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 1em;
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+    input[type="text"], input[type="date"] {
+      flex: 1;
+    }
+    button {
+      background-color: var(--accent-color);
+      color: var(--accent-text);
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: filter 0.2s;
+    }
+    button:hover {
+      filter: brightness(0.9);
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-secondary);
+      border-inline-start: 8px solid;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      animation: item-add 0.4s ease-out;
+    }
+    .green { border-color: #2ecc71; }
+    .orange { border-color: #f39c12; }
+    .red { border-color: #e74c3c; }
+    .item button {
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      font-weight: normal;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+      padding: 10px;
+      background-color: var(--bg-secondary);
+      border-radius: 8px;
+    }
+    .controls-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .controls-right button, .controls-right select {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+        font-weight: normal;
+    }
+    .counter {
+      font-size: 1em;
+      color: var(--text-secondary);
+    }
+    .icon {
+      margin-inline-end: 12px;
+      font-size: 1.2em;
+    }
+    #no-items-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+      font-size: 1.2em;
+      display: none; /* Hidden by default */
+      animation: fadeIn 0.5s;
+    }
+    #no-items-message .icon {
+        font-size: 3em;
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    /* Custom Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background-color: var(--bg-secondary);
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 5px 15px var(--shadow-color);
+      text-align: center;
+      animation: fadeIn 0.3s;
+    }
+    .modal-box h3 {
+      margin-top: 0;
+      color: var(--accent-color);
+    }
+    .modal-box p {
+      margin: 15px 0;
+    }
+    .modal-box textarea, .modal-box input {
+        width: calc(100% - 20px);
+        min-height: 100px;
+        margin-top: 15px;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-family: monospace;
+        padding: 10px;
+    }
+    .modal-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .modal-buttons button {
+        padding: 10px 20px;
+    }
+    .modal-buttons .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 data-lang-key="appName">متتبع صلاحية الثلاجة</h1>
+    <p data-lang-key="appSubtitle">أدر منتجات ثلاجتك بذكاء</p>
+  </header>
+
+  <div class="container">
+    <form id="itemForm">
+      <input type="text" id="name" data-lang-placeholder-key="itemNamePlaceholder" required>
+      <input type="date" id="expiry" required>
+      <button type="submit" data-lang-key="addBtn">إضافة</button>
+    </form>
+
+    <div class="controls">
+      <div class="controls-left">
+          <div class="counter" id="countDisplay"></div>
+      </div>
+      <div class="controls-right">
+        <select id="language-switcher"></select>
+        <button id="themeToggle">☀️/🌙</button>
+        <button onclick="exportData()" data-lang-key="exportBtn">تصدير</button>
+        <button onclick="importData()" data-lang-key="importBtn">استيراد</button>
+        <button onclick="confirmClearAll()" data-lang-key="clearAllBtn">مسح الكل</button>
+      </div>
+    </div>
+
+    <div id="itemList"></div>
+    <div id="no-items-message">
+        <span class="icon">🎉</span>
+        <span data-lang-key="noItems">قائمتك فارغة! لم لا تبدأ بإضافة بعض المنتجات؟</span>
+    </div>
+  </div>
+
+  <audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+
+  <!-- Custom Modal HTML Structure -->
+  <div class="modal-overlay" id="custom-modal">
+    <div class="modal-box">
+      <h3 id="modal-title"></h3>
+      <p id="modal-text"></p>
+      <div id="modal-input-area"></div>
+      <div class="modal-buttons">
+        <button id="modal-confirm-btn"></button>
+        <button id="modal-cancel-btn" class="btn-secondary"></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- DOM Elements ---
+    const body = document.body;
+    const form = document.getElementById('itemForm');
+    const itemList = document.getElementById('itemList');
+    const alertSound = document.getElementById('alertSound');
+    const countDisplay = document.getElementById('countDisplay');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const noItemsMessage = document.getElementById('no-items-message');
+    const languageSwitcher = document.getElementById('language-switcher');
+    
+    // --- State & Data ---
+    let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
+    const translations = {
+        'en': {
+            dir: 'ltr',
+            appName: 'Fridge Expiry Tracker',
+            appSubtitle: 'Track and manage your fridge items smartly',
+            itemNamePlaceholder: 'Item name',
+            addBtn: 'Add',
+            exportBtn: 'Export',
+            importBtn: 'Import',
+            clearAllBtn: 'Clear All',
+            totalItems: 'Total items: {count}',
+            expiresOn: 'Expires: {date}',
+            removeBtn: 'Remove',
+            noItems: 'Your list is empty! Why not add some items?',
+            confirmDeleteAll: 'Are you sure you want to delete all items?',
+            confirmDeleteAllTitle: 'Confirm Deletion',
+            importPrompt: 'Paste your previously saved data here:',
+            importTitle: 'Import Data',
+            importSuccess: 'Data restored successfully!',
+            importError: 'Invalid data. Please make sure you pasted the correct text.',
+            exportInfo: 'Your data is ready. Copy this text and save it somewhere safe!',
+            exportTitle: 'Export Data',
+            okBtn: 'OK',
+            cancelBtn: 'Cancel',
+        },
+        'fr': {
+            dir: 'ltr',
+            appName: 'Suivi d\'expiration du frigo',
+            appSubtitle: 'Gérez intelligemment les articles de votre réfrigérateur',
+            itemNamePlaceholder: 'Nom de l\'article',
+            addBtn: 'Ajouter',
+            exportBtn: 'Exporter',
+            importBtn: 'Importer',
+            clearAllBtn: 'Tout effacer',
+            totalItems: 'Total des articles : {count}',
+            expiresOn: 'Expire le : {date}',
+            removeBtn: 'Supprimer',
+            noItems: 'Votre liste est vide ! Pourquoi ne pas ajouter quelques articles ?',
+            confirmDeleteAll: 'Êtes-vous sûr de vouloir supprimer tous les articles ?',
+            confirmDeleteAllTitle: 'Confirmer la suppression',
+            importPrompt: 'Collez vos données précédemment enregistrées ici :',
+            importTitle: 'Importer des données',
+            importSuccess: 'Données restaurées avec succès !',
+            importError: 'Données invalides. Assurez-vous d\'avoir collé le bon texte.',
+            exportInfo: 'Vos données sont prêtes. Copiez ce texte et gardez-le en lieu sûr !',
+            exportTitle: 'Exporter les données',
+            okBtn: 'OK',
+            cancelBtn: 'Annuler',
+        },
+        'ar': {
+            dir: 'rtl',
+            appName: 'متتبع صلاحية الثلاجة',
+            appSubtitle: 'أدر منتجات ثلاجتك بذكاء',
+            itemNamePlaceholder: 'اسم المنتج',
+            addBtn: 'إضافة',
+            exportBtn: 'تصدير',
+            importBtn: 'استيراد',
+            clearAllBtn: 'مسح الكل',
+            totalItems: 'إجمالي المنتجات: {count}',
+            expiresOn: 'تنتهي في: {date}',
+            removeBtn: 'حذف',
+            noItems: 'قائمتك فارغة! لم لا تبدأ بإضافة بعض المنتجات؟',
+            confirmDeleteAll: 'هل أنت متأكد من حذف جميع العناصر؟',
+            confirmDeleteAllTitle: 'تأكيد الحذف',
+            importPrompt: 'الرجاء لصق البيانات التي قمت بحفظها مسبقًا:',
+            importTitle: 'استيراد البيانات',
+            importSuccess: 'تم استعادة البيانات بنجاح!',
+            importError: 'بيانات غير صالحة. تأكد من لصق النص الصحيح.',
+            exportInfo: 'بياناتك جاهزة. انسخ هذا النص واحفظه في مكان آمن!',
+            exportTitle: 'تصدير البيانات',
+            okBtn: 'موافق',
+            cancelBtn: 'إلغاء',
+        }
+    };
+    let currentLang = localStorage.getItem('language') || 'ar';
+    
+    // --- Language Functions ---
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('language', lang);
+        const t = translations[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = t.dir;
+
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            const key = el.dataset.langKey;
+            if(t[key]) el.textContent = t[key];
+        });
+        document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => {
+            const key = el.dataset.langPlaceholderKey;
+            if(t[key]) el.placeholder = t[key];
+        });
+        
+        languageSwitcher.value = lang;
+        updateCount(); // Re-render count with new language
+        renderItems(); // Re-render items with new language
+    }
+
+    function t(key, replacements = {}) {
+        let text = translations[currentLang][key] || key;
+        for (const placeholder in replacements) {
+            text = text.replace(`{${placeholder}}`, replacements[placeholder]);
+        }
+        return text;
+    }
+    
+    // --- UI & Rendering ---
+    function updateCount() {
+      countDisplay.textContent = t('totalItems', {count: items.length});
+      noItemsMessage.style.display = items.length === 0 ? 'block' : 'none';
+    }
+
+    function renderItems() {
+      itemList.innerHTML = '';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      items.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+
+      items.forEach((item, index) => {
+        const expiry = new Date(item.expiry);
+        const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+        
+        let status = 'green', icon = '🥬';
+        if (diffDays < 3 && diffDays >= 0) { status = 'orange'; icon = '⚠️'; alertSound.play(); }
+        else if (diffDays < 0) { status = 'red'; icon = '⛔'; }
+
+        const div = document.createElement('div');
+        div.className = `item ${status}`;
+        div.innerHTML = `
+          <span><span class="icon">${icon}</span>${item.name} — ${t('expiresOn', {date: item.expiry})}</span>
+          <button data-index="${index}">${t('removeBtn')}</button>
+        `;
+        itemList.appendChild(div);
+      });
+      updateCount();
+    }
+    
+    // --- Core Logic Functions ---
+    function addItem(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const expiry = document.getElementById('expiry').value;
+      if (!name || !expiry) return;
+      items.push({ name, expiry });
+      localStorage.setItem('fridgeItems', JSON.stringify(items));
+      renderItems();
+      form.reset();
+    }
+
+    itemList.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const index = e.target.dataset.index;
+            const itemElement = e.target.closest('.item');
+            itemElement.classList.add('item-remove-animation');
+            itemElement.addEventListener('animationend', () => {
+                items.splice(index, 1);
+                localStorage.setItem('fridgeItems', JSON.stringify(items));
+                renderItems();
+            });
+        }
+    });
+
+    function confirmClearAll() {
+        showCustomConfirm(t('confirmDeleteAll'), t('confirmDeleteAllTitle'), (confirmed) => {
+            if (confirmed) {
+                items = [];
+                localStorage.removeItem('fridgeItems');
+                renderItems();
+            }
+        });
+    }
+    
+    function exportData() {
+        if (items.length === 0) return;
+        const dataString = JSON.stringify(items, null, 2);
+        showCustomAlert(t('exportInfo'), t('exportTitle'), dataString);
+    }
+    
+    function importData() {
+        showCustomPrompt(t('importPrompt'), t('importTitle'), (dataString) => {
+            if (dataString) {
+                try {
+                    const importedItems = JSON.parse(dataString);
+                    if (Array.isArray(importedItems)) {
+                        items = importedItems;
+                        localStorage.setItem('fridgeItems', JSON.stringify(items));
+                        renderItems();
+                        showCustomAlert(t('importSuccess'), t('appName'));
+                    } else { throw new Error('Not an array'); }
+                } catch (error) {
+                    showCustomAlert(t('importError'), 'Error');
+                }
+            }
+        });
+    }
+
+    // --- Custom Modal Functions ---
+    const modal = document.getElementById('custom-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalText = document.getElementById('modal-text');
+    const modalInputArea = document.getElementById('modal-input-area');
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+
+    function showCustomModal(title, text, type = 'alert', content = '', callback = null) {
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+        modalInputArea.innerHTML = '';
+        
+        if (type === 'prompt' || (type === 'alert' && content)) {
+            const inputEl = (type === 'prompt') ? document.createElement('textarea') : document.createElement('textarea');
+            if (type === 'prompt') inputEl.placeholder = t('importPrompt');
+            else { inputEl.value = content; inputEl.readOnly = true; }
+            modalInputArea.appendChild(inputEl);
+        }
+
+        confirmBtn.textContent = t('okBtn');
+        cancelBtn.textContent = t('cancelBtn');
+        cancelBtn.style.display = (type === 'alert') ? 'none' : 'inline-block';
+        
+        modal.style.display = 'flex';
+
+        confirmBtn.onclick = () => {
+            const inputValue = modalInputArea.querySelector('textarea')?.value;
+            modal.style.display = 'none';
+            if (callback) callback(inputValue || true);
+        };
+        cancelBtn.onclick = () => {
+            modal.style.display = 'none';
+            if (callback) callback(false);
+        };
+    }
+
+    function showCustomAlert(text, title, content = '') {
+        showCustomModal(title, text, 'alert', content);
+    }
+    function showCustomConfirm(text, title, callback) {
+        showCustomModal(title, text, 'confirm', '', callback);
+    }
+    function showCustomPrompt(text, title, callback) {
+        showCustomModal(title, text, 'prompt', '', callback);
+    }
+
+    // --- Initialization ---
+    function initialize() {
+        // Populate language switcher
+        Object.keys(translations).forEach(lang => {
+            const option = document.createElement('option');
+            option.value = lang;
+            option.textContent = lang.toUpperCase();
+            languageSwitcher.appendChild(option);
+        });
+        languageSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
+
+        // Theme toggler
+        themeToggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+        });
+        if (localStorage.getItem('theme') === 'light') body.classList.add('light-mode');
+
+        // Form submission
+        form.addEventListener('submit', addItem);
+        
+        // Initial render
+        setLanguage(currentLang);
+    }
+
+    initialize();
+  </script>
+
+</body>
+</html>
