@@ -18,10 +18,41 @@
       --shadow-color: rgba(0,0,0,0.1);
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    /* --- MODIFICATION 1 (CSS): Animation for the new header --- */
+    @keyframes slideDown {
+        from { transform: translateY(-100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
     body {
       margin: 0; padding: 0; font-family: 'Segoe UI', 'Cairo', sans-serif;
       background-color: var(--bg-primary); color: var(--text-primary);
     }
+
+    /* --- MODIFICATION 2 (CSS): Styles for the new header --- */
+    .app-header {
+        background-color: var(--bg-secondary);
+        color: white;
+        padding: 20px 15px;
+        text-align: center;
+        box-shadow: 0 4px 8px var(--shadow-color);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        animation: slideDown 0.6s ease-out;
+    }
+    .app-header .logo {
+        font-size: 2.5em; /* Bigger logo */
+        margin-bottom: 5px;
+        display: block;
+    }
+    .app-header .app-title {
+        color: var(--accent-color);
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 0;
+    }
+
     .container { padding: 15px; }
     form {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
@@ -72,6 +103,12 @@
 </head>
 <body>
 
+  <!-- --- MODIFICATION 3 (HTML): The new header section --- -->
+  <header class="app-header">
+    <span class="logo">🧊</span>
+    <h1 class="app-title" data-lang-key="appName">متتبع الثلاجة</h1>
+  </header>
+
   <div class="container">
     <div class="controls">
       <div id="countDisplay"></div>
@@ -107,7 +144,11 @@
   </div>
 
   <script>
-    // --- DOM Elements ---
+    // --- NO CHANGES IN JAVASCRIPT LOGIC ---
+    // The JavaScript code is exactly the same as the last working version.
+    // It will now control the elements inside .container, and the new header
+    // is independent and will not cause conflicts.
+
     const form = document.getElementById('itemForm');
     const itemList = document.getElementById('itemList');
     const countDisplay = document.getElementById('countDisplay');
@@ -115,32 +156,27 @@
     const languageSwitcher = document.getElementById('language-switcher');
     const categorySelect = document.getElementById('category');
 
-    // --- State & Data ---
     let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
     const categories = {
-        dairy: '🥛',
-        vegetable: '🥦',
-        fruit: '🍓',
-        meat: '🥩',
-        other: '🥫'
+        dairy: '🥛', vegetable: '🥦', fruit: '🍓', meat: '🥩', other: '🥫'
     };
     const translations = {
         'en': {
-            dir: 'ltr', addBtn: 'Add', totalItems: 'Total: {count}', expiresOn: 'Expires:',
+            dir: 'ltr', appName: 'Fridge Tracker', addBtn: 'Add', totalItems: 'Total: {count}', expiresOn: 'Expires:',
             removeBtn: 'Remove', noItems: 'Your list is empty!', confirmDeleteTitle: 'Confirm Deletion',
             confirmDeleteText: 'Are you sure you want to remove this item?', okBtn: 'OK', cancelBtn: 'Cancel',
             itemNamePlaceholder: 'Item name',
             cat_dairy: 'Dairy', cat_vegetable: 'Vegetable', cat_fruit: 'Fruit', cat_meat: 'Meat', cat_other: 'Other'
         },
         'fr': {
-            dir: 'ltr', addBtn: 'Ajouter', totalItems: 'Total : {count}', expiresOn: 'Expire le :',
+            dir: 'ltr', appName: 'Suivi Frigo', addBtn: 'Ajouter', totalItems: 'Total : {count}', expiresOn: 'Expire le :',
             removeBtn: 'Supprimer', noItems: 'Votre liste est vide !', confirmDeleteTitle: 'Confirmer',
             confirmDeleteText: 'Voulez-vous vraiment supprimer cet article ?', okBtn: 'OK', cancelBtn: 'Annuler',
             itemNamePlaceholder: 'Nom de l\'article',
             cat_dairy: 'Laitier', cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_other: 'Autre'
         },
         'ar': {
-            dir: 'rtl', addBtn: 'إضافة', totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في:',
+            dir: 'rtl', appName: 'متتبع الثلاجة', addBtn: 'إضافة', totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في:',
             removeBtn: 'حذف', noItems: 'قائمتك فارغة!', confirmDeleteTitle: 'تأكيد الحذف',
             confirmDeleteText: 'هل أنت متأكد من حذف هذا المنتج؟', okBtn: 'موافق', cancelBtn: 'إلغاء',
             itemNamePlaceholder: 'اسم المنتج',
@@ -161,6 +197,8 @@
         const tData = translations[lang];
         document.documentElement.lang = lang;
         document.documentElement.dir = tData.dir;
+        
+        // This querySelectorAll is robust and will update text anywhere in the document
         document.querySelectorAll('[data-lang-key]').forEach(el => el.textContent = t(el.dataset.langKey));
         document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => el.placeholder = t(el.dataset.langPlaceholderKey));
         
@@ -189,19 +227,17 @@
             const expiry = new Date(item.expiry);
             const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
             
-            // This part determines the COLOR of the side-border
             let expiryStatusClass = 'green';
             if (diffDays < 3 && diffDays >= 0) expiryStatusClass = 'orange';
             else if (diffDays < 0) expiryStatusClass = 'red';
             
-            // This part determines the ICON based on the category
             const categoryIcon = categories[item.category] || '❓';
 
             const div = document.createElement('div');
-            div.className = `item ${expiryStatusClass}`; // The class here controls the color
+            div.className = `item ${expiryStatusClass}`;
             div.innerHTML = `
                 <span>
-                    <span class="icon">${categoryIcon}</span> <!-- The icon is from the category -->
+                    <span class="icon">${categoryIcon}</span>
                     ${item.name} - <small>${t('expiresOn')} ${item.expiry}</small>
                 </span>
                 <button data-index="${index}">${t('removeBtn')}</button>
@@ -216,7 +252,6 @@
       const expiry = document.getElementById('expiry').value;
       const category = document.getElementById('category').value;
       if (!name || !expiry || !category) return;
-
       items.push({ name, expiry, category });
       localStorage.setItem('fridgeItems', JSON.stringify(items));
       renderItems();
@@ -233,9 +268,7 @@
         if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
             const index = parseInt(e.target.dataset.index, 10);
             showCustomConfirm(t('confirmDeleteTitle'), t('confirmDeleteText'), (confirmed) => {
-                if (confirmed) {
-                    removeItem(index);
-                }
+                if (confirmed) { removeItem(index); }
             });
         }
     });
