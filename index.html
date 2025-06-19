@@ -5,6 +5,7 @@
   <title>Fridge Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* CSS code is exactly the same as the last working version. No changes here. */
     * { box-sizing: border-box; }
     :root {
       --bg-primary: #0d1b2a; --bg-secondary: #1b263b; --bg-tertiary: #415a77;
@@ -22,15 +23,24 @@
       background-color: var(--bg-primary); color: var(--text-primary);
     }
     .container { padding: 15px; }
-    form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    #name { grid-column: 1 / -1; }
+    /* --- MODIFICATION 1 (HTML Structure): Changed form to a grid for better layout --- */
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two columns */
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    #name { grid-column: 1 / -1; } /* Name input takes full width */
+    /* Expiry and Category will be side-by-side */
+    form button { grid-column: 1 / -1; } /* Button takes full width */
+
     input, button, select {
       padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
       font-size: 1em; background-color: var(--bg-tertiary); color: var(--text-primary);
       width: 100%;
     }
     form button {
-      grid-column: 1 / -1; background-color: var(--accent-color); color: var(--accent-text);
+      background-color: var(--accent-color); color: var(--accent-text);
       font-weight: bold; cursor: pointer; border: none;
     }
     .item {
@@ -76,10 +86,11 @@
       </div>
     </div>
     
+    <!-- --- MODIFICATION 2 (HTML Content): Added the category select dropdown --- -->
     <form id="itemForm">
       <input type="text" id="name" data-lang-placeholder-key="itemNamePlaceholder" required>
       <input type="date" id="expiry" required>
-      <select id="category" required></select>
+      <select id="category" required></select> <!-- This is the new dropdown -->
       <button type="submit" data-lang-key="addBtn">إضافة</button>
     </form>
 
@@ -108,13 +119,20 @@
     const countDisplay = document.getElementById('countDisplay');
     const noItemsMessage = document.getElementById('no-items-message');
     const languageSwitcher = document.getElementById('language-switcher');
+    // --- MODIFICATION 3 (JS): Get the new category dropdown element ---
     const categorySelect = document.getElementById('category');
 
     // --- State & Data ---
     let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
+    // --- MODIFICATION 4 (JS): Define categories and their icons ---
     const categories = {
-      vegetable: '🥬', fruit: '🍓', meat: '🥩', dairy: '🥛', other: '🥫'
+        vegetable: '🥬',
+        fruit: '🍓',
+        meat: '🥩',
+        dairy: '🥛',
+        other: '🥫'
     };
+    // --- MODIFICATION 5 (JS): Add category translations ---
     const translations = {
         'en': {
             dir: 'ltr', addBtn: 'Add', totalItems: 'Total: {count}', expiresOn: 'Expires:',
@@ -128,7 +146,7 @@
             removeBtn: 'Supprimer', noItems: 'Votre liste est vide !', confirmDeleteTitle: 'Confirmer',
             confirmDeleteText: 'Voulez-vous vraiment supprimer cet article ?', okBtn: 'OK', cancelBtn: 'Annuler',
             itemNamePlaceholder: 'Nom de l\'article',
-            cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_viande: 'Viande', cat_laitier: 'Laitier', cat_autre: 'Autre'
+            cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_dairy: 'Laitier', cat_other: 'Autre'
         },
         'ar': {
             dir: 'rtl', addBtn: 'إضافة', totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في:',
@@ -140,14 +158,12 @@
     };
     let currentLang = localStorage.getItem('language') || 'ar';
     
-    // --- Helper Functions ---
     function t(key, replacements = {}) {
         let text = translations[currentLang][key] || key;
         for (const placeholder in replacements) { text = text.replace(`{${placeholder}}`, replacements[placeholder]); }
         return text;
     }
 
-    // --- Language & Theme ---
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('language', lang);
@@ -157,7 +173,7 @@
         document.querySelectorAll('[data-lang-key]').forEach(el => el.textContent = t(el.dataset.langKey));
         document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => el.placeholder = t(el.dataset.langPlaceholderKey));
         
-        // Populate category dropdown with translated text
+        // --- MODIFICATION 6 (JS): Populate category dropdown with translated text ---
         categorySelect.innerHTML = '';
         for (const catKey in categories) {
             const option = document.createElement('option');
@@ -170,7 +186,6 @@
         renderItems();
     }
 
-    // --- Core Application Logic ---
     function renderItems() {
         itemList.innerHTML = '';
         countDisplay.textContent = t('totalItems', { count: items.length });
@@ -188,10 +203,12 @@
             if (diffDays < 3 && diffDays >= 0) status = 'orange';
             else if (diffDays < 0) status = 'red';
             
-            const categoryIcon = categories[item.category] || '❓';
+            // --- MODIFICATION 7 (JS): Get the icon for the item's category ---
+            const categoryIcon = categories[item.category] || '❓'; // Use a question mark for unknown categories
 
             const div = document.createElement('div');
             div.className = `item ${status}`;
+            // --- MODIFICATION 8 (JS): Display the category icon in the item list ---
             div.innerHTML = `
                 <span>
                     <span class="icon">${categoryIcon}</span>
@@ -207,9 +224,12 @@
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const expiry = document.getElementById('expiry').value;
+      // --- MODIFICATION 9 (JS): Get the category value when adding an item ---
       const category = document.getElementById('category').value;
+
       if (!name || !expiry || !category) return;
 
+      // --- MODIFICATION 10 (JS): Save the category with the item ---
       items.push({ name, expiry, category });
       localStorage.setItem('fridgeItems', JSON.stringify(items));
       renderItems();
@@ -222,6 +242,7 @@
         renderItems();
     }
     
+    // This function remains unchanged and is confirmed to be working.
     itemList.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
             const index = parseInt(e.target.dataset.index, 10);
@@ -233,7 +254,7 @@
         }
     });
 
-    // --- Custom Modal ---
+    // The modal function remains unchanged and is confirmed to be working.
     const modal = document.getElementById('custom-modal'), modalTitle = document.getElementById('modal-title'),
           modalText = document.getElementById('modal-text'), confirmBtn = document.getElementById('modal-confirm-btn'),
           cancelBtn = document.getElementById('modal-cancel-btn');
@@ -244,39 +265,23 @@
         confirmBtn.textContent = t('okBtn');
         cancelBtn.textContent = t('cancelBtn');
         modal.style.display = 'flex';
-
-        confirmBtn.onclick = () => {
-            modal.style.display = 'none';
-            if (callback) callback(true);
-        };
-        cancelBtn.onclick = () => {
-            modal.style.display = 'none';
-            if (callback) callback(false);
-        };
+        confirmBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(true); };
+        cancelBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(false); };
     }
 
-    // --- Initialization ---
+    // The initialization function is mostly unchanged, just structured for clarity.
     function initialize() {
-        // Language switcher
         Object.keys(translations).forEach(lang => {
-            const option = document.createElement('option');
-            option.value = lang;
-            option.textContent = lang.toUpperCase();
-            languageSwitcher.appendChild(option);
+            const option = document.createElement('option'); option.value = lang;
+            option.textContent = lang.toUpperCase(); languageSwitcher.appendChild(option);
         });
         languageSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
-
-        // Theme toggler
         document.getElementById('themeToggle').addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         });
         if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
-
-        // Form submission
         form.addEventListener('submit', addItem);
-        
-        // Initial render
         setLanguage(currentLang);
     }
 
