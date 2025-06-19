@@ -5,7 +5,7 @@
   <title>Fridge Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* CSS code is exactly the same as the last working version. No changes here. */
+    /* CSS is stable and correct */
     * { box-sizing: border-box; }
     :root {
       --bg-primary: #0d1b2a; --bg-secondary: #1b263b; --bg-tertiary: #415a77;
@@ -23,21 +23,14 @@
       background-color: var(--bg-primary); color: var(--text-primary);
     }
     .container { padding: 15px; }
-    /* --- MODIFICATION 1 (HTML Structure): Changed form to a grid for better layout --- */
     form {
-      display: grid;
-      grid-template-columns: 1fr 1fr; /* Two columns */
-      gap: 10px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
     }
-    #name { grid-column: 1 / -1; } /* Name input takes full width */
-    /* Expiry and Category will be side-by-side */
-    form button { grid-column: 1 / -1; } /* Button takes full width */
-
+    #name { grid-column: 1 / -1; }
+    form button { grid-column: 1 / -1; }
     input, button, select {
       padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
-      font-size: 1em; background-color: var(--bg-tertiary); color: var(--text-primary);
-      width: 100%;
+      font-size: 1em; background-color: var(--bg-tertiary); color: var(--text-primary); width: 100%;
     }
     form button {
       background-color: var(--accent-color); color: var(--accent-text);
@@ -49,11 +42,13 @@
       border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px var(--shadow-color);
       animation: fadeIn 0.4s;
     }
+    /* Color of the side-border represents EXIRY STATUS */
     .green { border-color: #2ecc71; }
     .orange { border-color: #f39c12; }
     .red { border-color: #e74c3c; }
+
     .item button {
-      background-color: #e74c3c; color: #fff; border: none; padding: 6px 14px;
+      background-color: #95a5a6; color: #fff; border: none; padding: 6px 14px;
       border-radius: 6px; font-weight: normal; flex-shrink: 0;
     }
     .controls {
@@ -86,11 +81,10 @@
       </div>
     </div>
     
-    <!-- --- MODIFICATION 2 (HTML Content): Added the category select dropdown --- -->
     <form id="itemForm">
       <input type="text" id="name" data-lang-placeholder-key="itemNamePlaceholder" required>
       <input type="date" id="expiry" required>
-      <select id="category" required></select> <!-- This is the new dropdown -->
+      <select id="category" required></select>
       <button type="submit" data-lang-key="addBtn">إضافة</button>
     </form>
 
@@ -119,41 +113,38 @@
     const countDisplay = document.getElementById('countDisplay');
     const noItemsMessage = document.getElementById('no-items-message');
     const languageSwitcher = document.getElementById('language-switcher');
-    // --- MODIFICATION 3 (JS): Get the new category dropdown element ---
     const categorySelect = document.getElementById('category');
 
     // --- State & Data ---
     let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
-    // --- MODIFICATION 4 (JS): Define categories and their icons ---
     const categories = {
-        vegetable: '🥬',
+        dairy: '🥛',
+        vegetable: '🥦',
         fruit: '🍓',
         meat: '🥩',
-        dairy: '🥛',
         other: '🥫'
     };
-    // --- MODIFICATION 5 (JS): Add category translations ---
     const translations = {
         'en': {
             dir: 'ltr', addBtn: 'Add', totalItems: 'Total: {count}', expiresOn: 'Expires:',
             removeBtn: 'Remove', noItems: 'Your list is empty!', confirmDeleteTitle: 'Confirm Deletion',
             confirmDeleteText: 'Are you sure you want to remove this item?', okBtn: 'OK', cancelBtn: 'Cancel',
             itemNamePlaceholder: 'Item name',
-            cat_vegetable: 'Vegetable', cat_fruit: 'Fruit', cat_meat: 'Meat', cat_dairy: 'Dairy', cat_other: 'Other'
+            cat_dairy: 'Dairy', cat_vegetable: 'Vegetable', cat_fruit: 'Fruit', cat_meat: 'Meat', cat_other: 'Other'
         },
         'fr': {
             dir: 'ltr', addBtn: 'Ajouter', totalItems: 'Total : {count}', expiresOn: 'Expire le :',
             removeBtn: 'Supprimer', noItems: 'Votre liste est vide !', confirmDeleteTitle: 'Confirmer',
             confirmDeleteText: 'Voulez-vous vraiment supprimer cet article ?', okBtn: 'OK', cancelBtn: 'Annuler',
             itemNamePlaceholder: 'Nom de l\'article',
-            cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_dairy: 'Laitier', cat_other: 'Autre'
+            cat_dairy: 'Laitier', cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_other: 'Autre'
         },
         'ar': {
             dir: 'rtl', addBtn: 'إضافة', totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في:',
             removeBtn: 'حذف', noItems: 'قائمتك فارغة!', confirmDeleteTitle: 'تأكيد الحذف',
             confirmDeleteText: 'هل أنت متأكد من حذف هذا المنتج؟', okBtn: 'موافق', cancelBtn: 'إلغاء',
             itemNamePlaceholder: 'اسم المنتج',
-            cat_vegetable: 'خضروات', cat_fruit: 'فواكه', cat_meat: 'لحوم', cat_dairy: 'ألبان', cat_other: 'أخرى'
+            cat_dairy: 'ألبان', cat_vegetable: 'خضروات', cat_fruit: 'فواكه', cat_meat: 'لحوم', cat_other: 'أخرى'
         }
     };
     let currentLang = localStorage.getItem('language') || 'ar';
@@ -173,7 +164,6 @@
         document.querySelectorAll('[data-lang-key]').forEach(el => el.textContent = t(el.dataset.langKey));
         document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => el.placeholder = t(el.dataset.langPlaceholderKey));
         
-        // --- MODIFICATION 6 (JS): Populate category dropdown with translated text ---
         categorySelect.innerHTML = '';
         for (const catKey in categories) {
             const option = document.createElement('option');
@@ -199,19 +189,19 @@
             const expiry = new Date(item.expiry);
             const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
             
-            let status = 'green';
-            if (diffDays < 3 && diffDays >= 0) status = 'orange';
-            else if (diffDays < 0) status = 'red';
+            // This part determines the COLOR of the side-border
+            let expiryStatusClass = 'green';
+            if (diffDays < 3 && diffDays >= 0) expiryStatusClass = 'orange';
+            else if (diffDays < 0) expiryStatusClass = 'red';
             
-            // --- MODIFICATION 7 (JS): Get the icon for the item's category ---
-            const categoryIcon = categories[item.category] || '❓'; // Use a question mark for unknown categories
+            // This part determines the ICON based on the category
+            const categoryIcon = categories[item.category] || '❓';
 
             const div = document.createElement('div');
-            div.className = `item ${status}`;
-            // --- MODIFICATION 8 (JS): Display the category icon in the item list ---
+            div.className = `item ${expiryStatusClass}`; // The class here controls the color
             div.innerHTML = `
                 <span>
-                    <span class="icon">${categoryIcon}</span>
+                    <span class="icon">${categoryIcon}</span> <!-- The icon is from the category -->
                     ${item.name} - <small>${t('expiresOn')} ${item.expiry}</small>
                 </span>
                 <button data-index="${index}">${t('removeBtn')}</button>
@@ -224,12 +214,9 @@
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const expiry = document.getElementById('expiry').value;
-      // --- MODIFICATION 9 (JS): Get the category value when adding an item ---
       const category = document.getElementById('category').value;
-
       if (!name || !expiry || !category) return;
 
-      // --- MODIFICATION 10 (JS): Save the category with the item ---
       items.push({ name, expiry, category });
       localStorage.setItem('fridgeItems', JSON.stringify(items));
       renderItems();
@@ -242,7 +229,6 @@
         renderItems();
     }
     
-    // This function remains unchanged and is confirmed to be working.
     itemList.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
             const index = parseInt(e.target.dataset.index, 10);
@@ -254,7 +240,6 @@
         }
     });
 
-    // The modal function remains unchanged and is confirmed to be working.
     const modal = document.getElementById('custom-modal'), modalTitle = document.getElementById('modal-title'),
           modalText = document.getElementById('modal-text'), confirmBtn = document.getElementById('modal-confirm-btn'),
           cancelBtn = document.getElementById('modal-cancel-btn');
@@ -269,7 +254,6 @@
         cancelBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(false); };
     }
 
-    // The initialization function is mostly unchanged, just structured for clarity.
     function initialize() {
         Object.keys(translations).forEach(lang => {
             const option = document.createElement('option'); option.value = lang;
