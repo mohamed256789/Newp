@@ -5,7 +5,7 @@
   <title>Fridge Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Your excellent CSS is unchanged */
+    /* CSS is unchanged and stable */
     * { box-sizing: border-box; }
     :root {
       --bg-primary: #0d1b2a; --bg-secondary: #1b263b; --bg-tertiary: #415a77;
@@ -19,114 +19,79 @@
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    body {
-      margin: 0; padding: 0; font-family: 'Segoe UI', 'Cairo', sans-serif;
-      background-color: var(--bg-primary); color: var(--text-primary);
-    }
-    .app-header {
-        background-color: var(--bg-secondary); color: white; padding: 20px 15px;
-        text-align: center; box-shadow: 0 4px 8px var(--shadow-color); position: sticky;
-        top: 0; z-index: 100; animation: slideDown 0.6s ease-out;
-    }
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', 'Cairo', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); }
+    .app-header { background-color: var(--bg-secondary); color: white; padding: 20px 15px; text-align: center; box-shadow: 0 4px 8px var(--shadow-color); position: sticky; top: 0; z-index: 100; animation: slideDown 0.6s ease-out; }
     .app-header .logo { font-size: 2.5em; margin-bottom: 5px; display: block; }
     .app-header .app-title { color: var(--accent-color); font-size: 1.5em; font-weight: bold; margin: 0; }
     .container { padding: 15px; }
     form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
     #name { grid-column: 1 / -1; }
     form button { grid-column: 1 / -1; }
-    input, button, select {
-      padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
-      font-size: 1em; background-color: var(--bg-tertiary); color: var(--text-primary); width: 100%;
-    }
-    form button {
-      background-color: var(--accent-color); color: var(--accent-text);
-      font-weight: bold; cursor: pointer; border: none;
-    }
-    .item {
-      display: flex; justify-content: space-between; align-items: center;
-      background-color: var(--bg-secondary); border-inline-start: 8px solid; padding: 15px;
-      border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px var(--shadow-color);
-      animation: fadeIn 0.4s;
-    }
+    input, button, select { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; background-color: var(--bg-tertiary); color: var(--text-primary); width: 100%; }
+    form button { background-color: var(--accent-color); color: var(--accent-text); font-weight: bold; cursor: pointer; border: none; }
+    .item { display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-secondary); border-inline-start: 8px solid; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px var(--shadow-color); animation: fadeIn 0.4s; }
     .green { border-color: #2ecc71; }
     .orange { border-color: #f39c12; }
     .red { border-color: #e74c3c; }
-    .item button {
-      background-color: #95a5a6; color: #fff; border: none; padding: 6px 14px;
-      border-radius: 6px; font-weight: normal; flex-shrink: 0;
-    }
-    .controls {
-      margin-bottom: 20px; padding: 15px; background-color: var(--bg-secondary);
-      border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between;
-      align-items: center; gap: 15px;
-    }
+    .item button { background-color: #95a5a6; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: normal; flex-shrink: 0; }
+    .controls { margin-bottom: 20px; padding: 15px; background-color: var(--bg-secondary); border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+    #notification-btn { background-color: #3498db; color: white; display: none; }
     .icon { margin-inline-end: 12px; font-size: 1.2em; }
     #no-items-message { text-align: center; padding: 40px 20px; color: var(--text-secondary); display: none; }
-    .modal-overlay {
-      display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;
-    }
-    .modal-box {
-      background-color: var(--bg-secondary); padding: 25px; border-radius: 10px; width: 90%;
-      max-width: 400px; text-align: center; animation: fadeIn 0.3s;
-    }
+    .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+    .modal-box { background-color: var(--bg-secondary); padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; animation: fadeIn 0.3s; }
     .modal-box h3 { margin-top: 0; color: var(--accent-color); }
     .modal-buttons { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
   </style>
 </head>
 <body>
-
   <header class="app-header">
     <span class="logo">🧊</span>
     <h1 class="app-title" data-lang-key="appName">متتبع الثلاجة</h1>
   </header>
-
   <div class="container">
     <div class="controls">
       <div id="countDisplay"></div>
       <div>
+        <button id="notification-btn" data-lang-key="enableNotificationsBtn">🔔 تفعيل الإشعارات</button>
         <select id="language-switcher"></select>
         <button id="themeToggle">☀️/🌙</button>
       </div>
     </div>
-    
     <form id="itemForm">
       <input type="text" id="name" data-lang-placeholder-key="itemNamePlaceholder" required>
       <input type="date" id="expiry" required>
       <select id="category" required></select>
       <button type="submit" data-lang-key="addBtn">إضافة</button>
     </form>
-
     <div id="itemList"></div>
-    <div id="no-items-message">
-        <span class="icon">🎉</span>
-        <span data-lang-key="noItems">قائمتك فارغة!</span>
-    </div>
+    <div id="no-items-message"><span class="icon">🎉</span> <span data-lang-key="noItems">قائمتك فارغة!</span></div>
   </div>
-
   <div class="modal-overlay" id="custom-modal">
     <div class="modal-box">
-      <h3 id="modal-title"></h3>
-      <p id="modal-text"></p>
+      <h3 id="modal-title"></h3><p id="modal-text"></p>
       <div class="modal-buttons">
         <button id="modal-confirm-btn"></button>
         <button id="modal-cancel-btn" style="background-color: var(--bg-tertiary); color: var(--text-primary);"></button>
       </div>
     </div>
   </div>
-
   <script>
-    // --- All previous, stable JavaScript code is here ---
     const form = document.getElementById('itemForm');
     const itemList = document.getElementById('itemList');
     const countDisplay = document.getElementById('countDisplay');
     const noItemsMessage = document.getElementById('no-items-message');
     const languageSwitcher = document.getElementById('language-switcher');
     const categorySelect = document.getElementById('category');
+    const notificationBtn = document.getElementById('notification-btn');
 
     let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
     const categories = {
-        dairy: '🥛', vegetable: '🥦', fruit: '🍓', meat: '🥩', other: '🥫'
+        dairy: '🥛',
+        vegetable: '🥦',
+        fruit: '🍓',
+        meat: '🥩',
+        other: '🥫'
     };
     const translations = {
         'en': {
@@ -135,6 +100,7 @@
             confirmDeleteText: 'Are you sure?', okBtn: 'OK', cancelBtn: 'Cancel',
             itemNamePlaceholder: 'Item name',
             cat_dairy: 'Dairy', cat_vegetable: 'Vegetable', cat_fruit: 'Fruit', cat_meat: 'Meat', cat_other: 'Other',
+            enableNotificationsBtn: '🔔 Enable Notifications',
             notificationTitle: 'Expiry Alert!',
             notificationBody: 'Your "{itemName}" is expiring soon!'
         },
@@ -144,6 +110,7 @@
             confirmDeleteText: 'Êtes-vous sûr ?', okBtn: 'OK', cancelBtn: 'Annuler',
             itemNamePlaceholder: 'Nom de l\'article',
             cat_dairy: 'Laitier', cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_other: 'Autre',
+            enableNotificationsBtn: '🔔 Activer les notifications',
             notificationTitle: 'Alerte d\'expiration !',
             notificationBody: 'Votre "{itemName}" expire bientôt !'
         },
@@ -153,153 +120,195 @@
             confirmDeleteText: 'هل أنت متأكد؟', okBtn: 'موافق', cancelBtn: 'إلغاء',
             itemNamePlaceholder: 'اسم المنتج',
             cat_dairy: 'ألبان', cat_vegetable: 'خضروات', cat_fruit: 'فواكه', cat_meat: 'لحوم', cat_other: 'أخرى',
+            enableNotificationsBtn: '🔔 تفعيل الإشعارات',
             notificationTitle: 'تنبيه انتهاء الصلاحية!',
             notificationBody: 'منتج "{itemName}" سينتهي قريبًا!'
         }
     };
     let currentLang = localStorage.getItem('language') || 'ar';
-    
+
     function t(key, replacements = {}) {
         let text = (translations[currentLang] && translations[currentLang][key]) || translations['en'][key] || key;
-        for (const placeholder in replacements) { text = text.replace(`{${placeholder}}`, replacements[placeholder]); }
+        for (const placeholder in replacements) {
+            text = text.replace(`{${placeholder}}`, replacements[placeholder]);
+        }
         return text;
     }
 
     function setLanguage(lang) {
-        currentLang = lang; localStorage.setItem('language', lang);
-        const tData = translations[lang]; document.documentElement.lang = lang; document.documentElement.dir = tData.dir;
+        currentLang = lang;
+        localStorage.setItem('language', lang);
+        const tData = translations[lang];
+        document.documentElement.lang = lang;
+        document.documentElement.dir = tData.dir;
         document.querySelectorAll('[data-lang-key]').forEach(el => el.textContent = t(el.dataset.langKey));
         document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => el.placeholder = t(el.dataset.langPlaceholderKey));
+        
         categorySelect.innerHTML = '';
         for (const catKey in categories) {
-            const option = document.createElement('option'); option.value = catKey;
-            option.textContent = t(`cat_${catKey}`); categorySelect.appendChild(option);
+            const option = document.createElement('option');
+            option.value = catKey;
+            option.textContent = t(`cat_${catKey}`);
+            categorySelect.appendChild(option);
         }
-        languageSwitcher.value = lang; renderItems();
+        
+        languageSwitcher.value = lang;
+        renderItems();
     }
 
     function renderItems() {
-        itemList.innerHTML = ''; countDisplay.textContent = t('totalItems', { count: items.length });
+        itemList.innerHTML = '';
+        countDisplay.textContent = t('totalItems', { count: items.length });
         noItemsMessage.style.display = items.length === 0 ? 'block' : 'none';
-        const today = new Date(); today.setHours(0, 0, 0, 0);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         items.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+
         items.forEach((item, index) => {
-            const expiry = new Date(item.expiry); const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            const expiry = new Date(item.expiry);
+            const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+            
             let expiryStatusClass = 'green';
-            if (diffDays < 3 && diffDays >= 0) expiryStatusClass = 'orange'; else if (diffDays < 0) expiryStatusClass = 'red';
+            if (diffDays < 3 && diffDays >= 0) expiryStatusClass = 'orange';
+            else if (diffDays < 0) expiryStatusClass = 'red';
+            
             const categoryIcon = categories[item.category] || '❓';
-            const div = document.createElement('div'); div.className = `item ${expiryStatusClass}`;
-            div.innerHTML = `<span><span class="icon">${categoryIcon}</span>${item.name} - <small>${t('expiresOn')} ${item.expiry}</small></span><button data-index="${index}">${t('removeBtn')}</button>`;
+
+            const div = document.createElement('div');
+            div.className = `item ${expiryStatusClass}`;
+            div.innerHTML = `
+                <span>
+                    <span class="icon">${categoryIcon}</span>
+                    ${item.name} - <small>${t('expiresOn')} ${item.expiry}</small>
+                </span>
+                <button data-index="${index}">${t('removeBtn')}</button>
+            `;
             itemList.appendChild(div);
         });
     }
     
     function addItem(e) {
       e.preventDefault();
-      const name = document.getElementById('name').value.trim(); const expiry = document.getElementById('expiry').value; const category = document.getElementById('category').value;
+      const name = document.getElementById('name').value.trim();
+      const expiry = document.getElementById('expiry').value;
+      const category = document.getElementById('category').value;
       if (!name || !expiry || !category) return;
-      items.push({ name, expiry, category }); localStorage.setItem('fridgeItems', JSON.stringify(items));
-      renderItems(); form.reset();
+      items.push({ name, expiry, category });
+      localStorage.setItem('fridgeItems', JSON.stringify(items));
+      renderItems();
+      form.reset();
     }
 
     function removeItem(index) {
-        items.splice(index, 1); localStorage.setItem('fridgeItems', JSON.stringify(items)); renderItems();
+        items.splice(index, 1);
+        localStorage.setItem('fridgeItems', JSON.stringify(items));
+        renderItems();
     }
     
     itemList.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
             const index = parseInt(e.target.dataset.index, 10);
-            showCustomConfirm(t('confirmDeleteTitle'), t('confirmDeleteText'), (confirmed) => { if (confirmed) { removeItem(index); } });
+            showCustomConfirm(t('confirmDeleteTitle'), t('confirmDeleteText'), (confirmed) => {
+                if (confirmed) {
+                    removeItem(index);
+                }
+            });
         }
     });
 
-    const modal = document.getElementById('custom-modal'), modalTitle = document.getElementById('modal-title'), modalText = document.getElementById('modal-text'), confirmBtn = document.getElementById('modal-confirm-btn'), cancelBtn = document.getElementById('modal-cancel-btn');
-    function showCustomConfirm(title, text, callback) {
-        modalTitle.textContent = title; modalText.textContent = text; confirmBtn.textContent = t('okBtn');
-        cancelBtn.textContent = t('cancelBtn'); modal.style.display = 'flex';
-        confirmBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(true); };
-        cancelBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(false); };
-    }
+    const modal = document.getElementById('custom-modal'), modalTitle = document.getElementById('modal-title'),
+          modalText = document.getElementById('modal-text'), confirmBtn = document.getElementById('modal-confirm-btn'),
+          cancelBtn = document.getElementById('modal-cancel-btn');
 
-    // --- MODIFICATION 1 (JS): NOTIFICATION LOGIC ---
-    let notifiedItems = []; // To avoid sending notifications for the same item repeatedly in one session
+    function showCustomConfirm(title, text, callback) {
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+        confirmBtn.textContent = t('okBtn');
+        cancelBtn.textContent = t('cancelBtn');
+        modal.style.display = 'flex';
+        confirmBtn.onclick = () => {
+            modal.style.display = 'none';
+            if (callback) callback(true);
+        };
+        cancelBtn.onclick = () => {
+            modal.style.display = 'none';
+            if (callback) callback(false);
+        };
+    }
+    
+    let notifiedItems = [];
 
     function showNotification(itemName) {
-        // Check if notification permission is granted
         if (Notification.permission === 'granted') {
             const title = t('notificationTitle');
             const body = t('notificationBody', { itemName: itemName });
-            
-            // The 'tag' option is important: it prevents multiple notifications for the same item
             const options = {
                 body: body,
-                icon: 'https://cdn-icons-png.flaticon.com/512/3081/3081429.png', // A generic food icon
+                icon: 'https://cdn-icons-png.flaticon.com/512/3081/3081429.png',
                 tag: `expiry-alert-${itemName}`
             };
-            new Notification(title, options);
+            try {
+                new Notification(title, options);
+            } catch (err) {
+                console.error("Notification API error: ", err);
+            }
         }
     }
 
     function checkAndNotify() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
         items.forEach(item => {
             const expiry = new Date(item.expiry);
             const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-
-            // Notify for items expiring in 2 days or less (and not already expired)
             if (diffDays <= 2 && diffDays >= 0) {
-                // Check if we already notified for this item in this session
                 if (!notifiedItems.includes(item.name)) {
                     showNotification(item.name);
-                    notifiedItems.push(item.name); // Add to the list to prevent re-notifying
+                    notifiedItems.push(item.name);
                 }
             }
         });
     }
 
-    function requestNotificationPermission() {
-        // Check if the browser supports notifications
+    function setupNotifications() {
         if (!("Notification" in window)) {
-            console.log("This browser does not support desktop notification");
+            console.log("Notifications not supported in this WebView.");
             return;
         }
-        
-        // Let's check whether notification permissions have already been granted
         if (Notification.permission === "granted") {
-            // If it's granted, check for expiring items immediately
+            notificationBtn.style.display = 'none';
             checkAndNotify();
-        } 
-        // Otherwise, we need to ask the user for permission
-        else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(function (permission) {
-                // If the user accepts, let's check for expiring items
-                if (permission === "granted") {
-                    checkAndNotify();
-                }
-            });
+        } else if (Notification.permission !== "denied") {
+            notificationBtn.style.display = 'inline-block';
+            notificationBtn.onclick = () => {
+                Notification.requestPermission().then(permission => {
+                    // After user action, re-run this setup function to update the UI
+                    setupNotifications();
+                });
+            };
         }
+        // If permission is denied, the button will remain hidden, which is good practice.
     }
 
-    // --- FINAL INITIALIZATION ---
     function initialize() {
         Object.keys(translations).forEach(lang => {
-            const option = document.createElement('option'); option.value = lang;
-            option.textContent = lang.toUpperCase(); languageSwitcher.appendChild(option);
+            const option = document.createElement('option');
+            option.value = lang;
+            option.textContent = lang.toUpperCase();
+            languageSwitcher.appendChild(option);
         });
         languageSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
         document.getElementById('themeToggle').addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
             localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         });
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
         form.addEventListener('submit', addItem);
         setLanguage(currentLang);
-
-        // --- MODIFICATION 2 (JS): Request notification permission on app start ---
-        // We use a small delay to ensure the app has loaded before asking for permission
-        setTimeout(requestNotificationPermission, 2000);
+        setupNotifications();
     }
 
     initialize();
