@@ -5,7 +5,7 @@
   <title>Fridge Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* CSS is stable and correct */
+    /* Your excellent CSS is unchanged */
     * { box-sizing: border-box; }
     :root {
       --bg-primary: #0d1b2a; --bg-secondary: #1b263b; --bg-tertiary: #415a77;
@@ -18,45 +18,20 @@
       --shadow-color: rgba(0,0,0,0.1);
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    /* --- MODIFICATION 1 (CSS): Animation for the new header --- */
-    @keyframes slideDown {
-        from { transform: translateY(-100%); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
+    @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     body {
       margin: 0; padding: 0; font-family: 'Segoe UI', 'Cairo', sans-serif;
       background-color: var(--bg-primary); color: var(--text-primary);
     }
-
-    /* --- MODIFICATION 2 (CSS): Styles for the new header --- */
     .app-header {
-        background-color: var(--bg-secondary);
-        color: white;
-        padding: 20px 15px;
-        text-align: center;
-        box-shadow: 0 4px 8px var(--shadow-color);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        animation: slideDown 0.6s ease-out;
+        background-color: var(--bg-secondary); color: white; padding: 20px 15px;
+        text-align: center; box-shadow: 0 4px 8px var(--shadow-color); position: sticky;
+        top: 0; z-index: 100; animation: slideDown 0.6s ease-out;
     }
-    .app-header .logo {
-        font-size: 2.5em; /* Bigger logo */
-        margin-bottom: 5px;
-        display: block;
-    }
-    .app-header .app-title {
-        color: var(--accent-color);
-        font-size: 1.5em;
-        font-weight: bold;
-        margin: 0;
-    }
-
+    .app-header .logo { font-size: 2.5em; margin-bottom: 5px; display: block; }
+    .app-header .app-title { color: var(--accent-color); font-size: 1.5em; font-weight: bold; margin: 0; }
     .container { padding: 15px; }
-    form {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
-    }
+    form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
     #name { grid-column: 1 / -1; }
     form button { grid-column: 1 / -1; }
     input, button, select {
@@ -73,11 +48,9 @@
       border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 4px var(--shadow-color);
       animation: fadeIn 0.4s;
     }
-    /* Color of the side-border represents EXIRY STATUS */
     .green { border-color: #2ecc71; }
     .orange { border-color: #f39c12; }
     .red { border-color: #e74c3c; }
-
     .item button {
       background-color: #95a5a6; color: #fff; border: none; padding: 6px 14px;
       border-radius: 6px; font-weight: normal; flex-shrink: 0;
@@ -103,7 +76,6 @@
 </head>
 <body>
 
-  <!-- --- MODIFICATION 3 (HTML): The new header section --- -->
   <header class="app-header">
     <span class="logo">🧊</span>
     <h1 class="app-title" data-lang-key="appName">متتبع الثلاجة</h1>
@@ -144,11 +116,7 @@
   </div>
 
   <script>
-    // --- NO CHANGES IN JAVASCRIPT LOGIC ---
-    // The JavaScript code is exactly the same as the last working version.
-    // It will now control the elements inside .container, and the new header
-    // is independent and will not cause conflicts.
-
+    // --- All previous, stable JavaScript code is here ---
     const form = document.getElementById('itemForm');
     const itemList = document.getElementById('itemList');
     const countDisplay = document.getElementById('countDisplay');
@@ -164,129 +132,157 @@
         'en': {
             dir: 'ltr', appName: 'Fridge Tracker', addBtn: 'Add', totalItems: 'Total: {count}', expiresOn: 'Expires:',
             removeBtn: 'Remove', noItems: 'Your list is empty!', confirmDeleteTitle: 'Confirm Deletion',
-            confirmDeleteText: 'Are you sure you want to remove this item?', okBtn: 'OK', cancelBtn: 'Cancel',
+            confirmDeleteText: 'Are you sure?', okBtn: 'OK', cancelBtn: 'Cancel',
             itemNamePlaceholder: 'Item name',
-            cat_dairy: 'Dairy', cat_vegetable: 'Vegetable', cat_fruit: 'Fruit', cat_meat: 'Meat', cat_other: 'Other'
+            cat_dairy: 'Dairy', cat_vegetable: 'Vegetable', cat_fruit: 'Fruit', cat_meat: 'Meat', cat_other: 'Other',
+            notificationTitle: 'Expiry Alert!',
+            notificationBody: 'Your "{itemName}" is expiring soon!'
         },
         'fr': {
             dir: 'ltr', appName: 'Suivi Frigo', addBtn: 'Ajouter', totalItems: 'Total : {count}', expiresOn: 'Expire le :',
             removeBtn: 'Supprimer', noItems: 'Votre liste est vide !', confirmDeleteTitle: 'Confirmer',
-            confirmDeleteText: 'Voulez-vous vraiment supprimer cet article ?', okBtn: 'OK', cancelBtn: 'Annuler',
+            confirmDeleteText: 'Êtes-vous sûr ?', okBtn: 'OK', cancelBtn: 'Annuler',
             itemNamePlaceholder: 'Nom de l\'article',
-            cat_dairy: 'Laitier', cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_other: 'Autre'
+            cat_dairy: 'Laitier', cat_vegetable: 'Légume', cat_fruit: 'Fruit', cat_meat: 'Viande', cat_other: 'Autre',
+            notificationTitle: 'Alerte d\'expiration !',
+            notificationBody: 'Votre "{itemName}" expire bientôt !'
         },
         'ar': {
             dir: 'rtl', appName: 'متتبع الثلاجة', addBtn: 'إضافة', totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في:',
             removeBtn: 'حذف', noItems: 'قائمتك فارغة!', confirmDeleteTitle: 'تأكيد الحذف',
-            confirmDeleteText: 'هل أنت متأكد من حذف هذا المنتج؟', okBtn: 'موافق', cancelBtn: 'إلغاء',
+            confirmDeleteText: 'هل أنت متأكد؟', okBtn: 'موافق', cancelBtn: 'إلغاء',
             itemNamePlaceholder: 'اسم المنتج',
-            cat_dairy: 'ألبان', cat_vegetable: 'خضروات', cat_fruit: 'فواكه', cat_meat: 'لحوم', cat_other: 'أخرى'
+            cat_dairy: 'ألبان', cat_vegetable: 'خضروات', cat_fruit: 'فواكه', cat_meat: 'لحوم', cat_other: 'أخرى',
+            notificationTitle: 'تنبيه انتهاء الصلاحية!',
+            notificationBody: 'منتج "{itemName}" سينتهي قريبًا!'
         }
     };
     let currentLang = localStorage.getItem('language') || 'ar';
     
     function t(key, replacements = {}) {
-        let text = translations[currentLang][key] || key;
+        let text = (translations[currentLang] && translations[currentLang][key]) || translations['en'][key] || key;
         for (const placeholder in replacements) { text = text.replace(`{${placeholder}}`, replacements[placeholder]); }
         return text;
     }
 
     function setLanguage(lang) {
-        currentLang = lang;
-        localStorage.setItem('language', lang);
-        const tData = translations[lang];
-        document.documentElement.lang = lang;
-        document.documentElement.dir = tData.dir;
-        
-        // This querySelectorAll is robust and will update text anywhere in the document
+        currentLang = lang; localStorage.setItem('language', lang);
+        const tData = translations[lang]; document.documentElement.lang = lang; document.documentElement.dir = tData.dir;
         document.querySelectorAll('[data-lang-key]').forEach(el => el.textContent = t(el.dataset.langKey));
         document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => el.placeholder = t(el.dataset.langPlaceholderKey));
-        
         categorySelect.innerHTML = '';
         for (const catKey in categories) {
-            const option = document.createElement('option');
-            option.value = catKey;
-            option.textContent = t(`cat_${catKey}`);
-            categorySelect.appendChild(option);
+            const option = document.createElement('option'); option.value = catKey;
+            option.textContent = t(`cat_${catKey}`); categorySelect.appendChild(option);
         }
-        
-        languageSwitcher.value = lang;
-        renderItems();
+        languageSwitcher.value = lang; renderItems();
     }
 
     function renderItems() {
-        itemList.innerHTML = '';
-        countDisplay.textContent = t('totalItems', { count: items.length });
+        itemList.innerHTML = ''; countDisplay.textContent = t('totalItems', { count: items.length });
         noItemsMessage.style.display = items.length === 0 ? 'block' : 'none';
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const today = new Date(); today.setHours(0, 0, 0, 0);
         items.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
-
         items.forEach((item, index) => {
-            const expiry = new Date(item.expiry);
-            const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-            
+            const expiry = new Date(item.expiry); const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
             let expiryStatusClass = 'green';
-            if (diffDays < 3 && diffDays >= 0) expiryStatusClass = 'orange';
-            else if (diffDays < 0) expiryStatusClass = 'red';
-            
+            if (diffDays < 3 && diffDays >= 0) expiryStatusClass = 'orange'; else if (diffDays < 0) expiryStatusClass = 'red';
             const categoryIcon = categories[item.category] || '❓';
-
-            const div = document.createElement('div');
-            div.className = `item ${expiryStatusClass}`;
-            div.innerHTML = `
-                <span>
-                    <span class="icon">${categoryIcon}</span>
-                    ${item.name} - <small>${t('expiresOn')} ${item.expiry}</small>
-                </span>
-                <button data-index="${index}">${t('removeBtn')}</button>
-            `;
+            const div = document.createElement('div'); div.className = `item ${expiryStatusClass}`;
+            div.innerHTML = `<span><span class="icon">${categoryIcon}</span>${item.name} - <small>${t('expiresOn')} ${item.expiry}</small></span><button data-index="${index}">${t('removeBtn')}</button>`;
             itemList.appendChild(div);
         });
     }
     
     function addItem(e) {
       e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const expiry = document.getElementById('expiry').value;
-      const category = document.getElementById('category').value;
+      const name = document.getElementById('name').value.trim(); const expiry = document.getElementById('expiry').value; const category = document.getElementById('category').value;
       if (!name || !expiry || !category) return;
-      items.push({ name, expiry, category });
-      localStorage.setItem('fridgeItems', JSON.stringify(items));
-      renderItems();
-      form.reset();
+      items.push({ name, expiry, category }); localStorage.setItem('fridgeItems', JSON.stringify(items));
+      renderItems(); form.reset();
     }
 
     function removeItem(index) {
-        items.splice(index, 1);
-        localStorage.setItem('fridgeItems', JSON.stringify(items));
-        renderItems();
+        items.splice(index, 1); localStorage.setItem('fridgeItems', JSON.stringify(items)); renderItems();
     }
     
     itemList.addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
             const index = parseInt(e.target.dataset.index, 10);
-            showCustomConfirm(t('confirmDeleteTitle'), t('confirmDeleteText'), (confirmed) => {
-                if (confirmed) { removeItem(index); }
-            });
+            showCustomConfirm(t('confirmDeleteTitle'), t('confirmDeleteText'), (confirmed) => { if (confirmed) { removeItem(index); } });
         }
     });
 
-    const modal = document.getElementById('custom-modal'), modalTitle = document.getElementById('modal-title'),
-          modalText = document.getElementById('modal-text'), confirmBtn = document.getElementById('modal-confirm-btn'),
-          cancelBtn = document.getElementById('modal-cancel-btn');
-
+    const modal = document.getElementById('custom-modal'), modalTitle = document.getElementById('modal-title'), modalText = document.getElementById('modal-text'), confirmBtn = document.getElementById('modal-confirm-btn'), cancelBtn = document.getElementById('modal-cancel-btn');
     function showCustomConfirm(title, text, callback) {
-        modalTitle.textContent = title;
-        modalText.textContent = text;
-        confirmBtn.textContent = t('okBtn');
-        cancelBtn.textContent = t('cancelBtn');
-        modal.style.display = 'flex';
+        modalTitle.textContent = title; modalText.textContent = text; confirmBtn.textContent = t('okBtn');
+        cancelBtn.textContent = t('cancelBtn'); modal.style.display = 'flex';
         confirmBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(true); };
         cancelBtn.onclick = () => { modal.style.display = 'none'; if (callback) callback(false); };
     }
 
+    // --- MODIFICATION 1 (JS): NOTIFICATION LOGIC ---
+    let notifiedItems = []; // To avoid sending notifications for the same item repeatedly in one session
+
+    function showNotification(itemName) {
+        // Check if notification permission is granted
+        if (Notification.permission === 'granted') {
+            const title = t('notificationTitle');
+            const body = t('notificationBody', { itemName: itemName });
+            
+            // The 'tag' option is important: it prevents multiple notifications for the same item
+            const options = {
+                body: body,
+                icon: 'https://cdn-icons-png.flaticon.com/512/3081/3081429.png', // A generic food icon
+                tag: `expiry-alert-${itemName}`
+            };
+            new Notification(title, options);
+        }
+    }
+
+    function checkAndNotify() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        items.forEach(item => {
+            const expiry = new Date(item.expiry);
+            const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+            // Notify for items expiring in 2 days or less (and not already expired)
+            if (diffDays <= 2 && diffDays >= 0) {
+                // Check if we already notified for this item in this session
+                if (!notifiedItems.includes(item.name)) {
+                    showNotification(item.name);
+                    notifiedItems.push(item.name); // Add to the list to prevent re-notifying
+                }
+            }
+        });
+    }
+
+    function requestNotificationPermission() {
+        // Check if the browser supports notifications
+        if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+            return;
+        }
+        
+        // Let's check whether notification permissions have already been granted
+        if (Notification.permission === "granted") {
+            // If it's granted, check for expiring items immediately
+            checkAndNotify();
+        } 
+        // Otherwise, we need to ask the user for permission
+        else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(function (permission) {
+                // If the user accepts, let's check for expiring items
+                if (permission === "granted") {
+                    checkAndNotify();
+                }
+            });
+        }
+    }
+
+    // --- FINAL INITIALIZATION ---
     function initialize() {
         Object.keys(translations).forEach(lang => {
             const option = document.createElement('option'); option.value = lang;
@@ -300,6 +296,10 @@
         if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
         form.addEventListener('submit', addItem);
         setLanguage(currentLang);
+
+        // --- MODIFICATION 2 (JS): Request notification permission on app start ---
+        // We use a small delay to ensure the app has loaded before asking for permission
+        setTimeout(requestNotificationPermission, 2000);
     }
 
     initialize();
