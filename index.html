@@ -5,6 +5,7 @@
   <title>Fridge Expiry Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* --- General Fixes & Setup --- */
     * { box-sizing: border-box; }
     :root {
       --bg-primary: #0d1b2a; --bg-secondary: #1b263b; --bg-tertiary: #415a77;
@@ -16,38 +17,52 @@
       --text-primary: #212529; --text-secondary: #6c757d; --border-color: #ccc;
       --shadow-color: rgba(0,0,0,0.1);
     }
-    @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes item-add{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+
+    /* --- Animations --- */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes item-add { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes logo-shake { /* NEW ANIMATION FOR LOGO */
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-2deg); }
+      75% { transform: rotate(2deg); }
+    }
+
+    /* --- Base Styles --- */
     body {
       margin: 0; padding: 0; font-family: 'Segoe UI', 'Cairo', sans-serif;
       background-color: var(--bg-primary); color: var(--text-primary);
       transition: background-color 0.3s, color 0.3s;
     }
     header {
-      text-align: center; padding: 20px; background-color: var(--bg-secondary);
+      text-align: center; padding: 15px; background-color: var(--bg-secondary);
       box-shadow: 0 2px 4px var(--shadow-color); position: sticky; top: 0; z-index: 100;
     }
-    header h1 { color: var(--accent-color); margin: 0; font-size: 1.5em; }
+    .app-title { /* NEW STYLE FOR LOGO AND TITLE */
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    #app-logo {
+      font-size: 2em;
+      animation: logo-shake 3s ease-in-out infinite;
+    }
+    header h1 {
+      color: var(--accent-color); margin: 0; font-size: 1.5em;
+    }
     .container { padding: 15px; }
-    form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    #name { grid-column: 1 / -1; } /* Item name takes full width */
+    
+    /* --- Forms & Controls --- */
+    form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .form-row { display: flex; gap: 10px; }
     input, button, select {
       padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
       font-size: 1em; background-color: var(--bg-tertiary); color: var(--text-primary);
     }
-    form button { grid-column: 1 / -1; background-color: var(--accent-color); color: var(--accent-text); font-weight: bold; cursor: pointer; border: none; transition: filter 0.2s; }
-    form button:hover { filter: brightness(0.9); }
-    .item {
-      display: flex; justify-content: space-between; align-items: center;
-      background-color: var(--bg-secondary); border-inline-start: 8px solid;
-      padding: 15px; border-radius: 8px; margin-bottom: 10px;
-      box-shadow: 0 2px 4px var(--shadow-color); animation: item-add 0.4s ease-out;
+    .form-row input, .form-row select { flex: 1; }
+    #add-item-btn { width: 100%; }
+    button {
+      background-color: var(--accent-color); color: var(--accent-text);
+      font-weight: bold; cursor: pointer; border: none; transition: filter 0.2s;
     }
-    .green{border-color:#2ecc71} .orange{border-color:#f39c12} .red{border-color:#e74c3c}
-    .item button {
-      background-color: #e74c3c; color: #fff; border: none;
-      padding: 6px 14px; border-radius: 6px; font-weight: normal;
-    }
+    button:hover { filter: brightness(0.9); }
     .controls {
       margin-bottom: 20px; padding: 15px; background-color: var(--bg-secondary);
       border-radius: 8px; display: flex; flex-direction: column; gap: 15px;
@@ -55,54 +70,65 @@
     .top-controls, .bottom-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .top-controls { justify-content: space-between; }
     .bottom-controls { justify-content: center; }
-    #search-bar { width: 100%; }
-    .counter { font-size: 1em; color: var(--text-secondary); }
-    .icon { margin-inline-end: 12px; font-size: 1.5em; vertical-align: middle; }
-    #no-items-message { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-size: 1.2em; display: none; animation: fadeIn 0.5s; }
+    #search-bar { width: 100%; margin-top: 5px; }
+
+    /* --- Item & Category List --- */
+    .category-container { margin-bottom: 20px; }
+    .category-header { /* NEW STYLE FOR CATEGORY TITLE */
+      display: flex; align-items: center; padding: 5px; margin-bottom: 10px;
+      border-bottom: 2px solid var(--accent-color);
+    }
+    .category-icon { font-size: 1.5em; margin-inline-end: 10px; }
+    .category-title { font-size: 1.2em; font-weight: bold; color: var(--accent-color); }
+    .item {
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: var(--bg-secondary); border-inline-start: 8px solid;
+      padding: 15px; border-radius: 8px; margin-bottom: 10px;
+      box-shadow: 0 2px 4px var(--shadow-color); animation: item-add 0.4s ease-out;
+    }
+    .green { border-color: #2ecc71; } .orange { border-color: #f39c12; } .red { border-color: #e74c3c; }
+    .item button {
+      background-color: #e74c3c; color: #fff; border: none;
+      padding: 6px 14px; border-radius: 6px; font-weight: normal;
+    }
+    #no-items-message {
+      text-align: center; padding: 40px 20px; color: var(--text-secondary);
+      font-size: 1.2em; display: none; animation: fadeIn 0.5s;
+    }
     #no-items-message .icon { font-size: 3em; display: block; margin-bottom: 10px; }
-    /* --- NEW CATEGORY FILTER STYLES --- */
-    #category-filter {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        padding-bottom: 10px;
-        -ms-overflow-style: none; /* for Internet Explorer, Edge */
-        scrollbar-width: none; /* for Firefox */
-    }
-    #category-filter::-webkit-scrollbar { display: none; /* for Chrome, Safari, and Opera */ }
-    .category-btn {
-        padding: 8px 15px;
-        border-radius: 20px;
-        background-color: var(--bg-tertiary);
-        color: var(--text-primary);
-        cursor: pointer;
-        border: 1px solid var(--border-color);
-        white-space: nowrap;
-        transition: background-color 0.2s, color 0.2s;
-    }
-    .category-btn.active {
-        background-color: var(--accent-color);
-        color: var(--accent-text);
-        font-weight: bold;
-        border-color: var(--accent-color);
-    }
-    /* Modal styles remain the same */
-    .modal-overlay{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:15px}.modal-box{background-color:var(--bg-secondary);padding:25px;border-radius:10px;width:100%;max-width:400px;box-shadow:0 5px 15px var(--shadow-color);text-align:center;animation:fadeIn .3s}.modal-box h3{margin-top:0;color:var(--accent-color)}.modal-box p{margin:15px 0}.modal-box textarea{width:100%;min-height:100px;margin-top:15px;background-color:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:4px;font-family:monospace;padding:10px}.modal-buttons{margin-top:20px;display:flex;gap:10px;justify-content:center}.modal-buttons button{padding:10px 20px}.modal-buttons .btn-secondary{background-color:var(--bg-tertiary);color:var(--text-primary)}
+    
+    /* --- Modal Styles (Unchanged) --- */
+    .modal-overlay{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:15px}.modal-box{background-color:var(--bg-secondary);padding:25px;border-radius:10px;width:100%;max-width:400px;box-shadow:0 5px 15px var(--shadow-color);text-align:center;animation:fadeIn .3s}.modal-box h3{margin-top:0;color:var(--accent-color)}.modal-box p{margin:15px 0}.modal-box textarea{width:100%;min-height:100px;margin-top:15px;background-color:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:4px;font-family:monospace;padding:10px}.modal-buttons{margin-top:20px;display:flex;gap:10px;justify-content:center}.modal-buttons button{padding:10px 20px}.modal-buttons .btn-secondary{background-color:var(--bg-tertiary);color:var(--text-primary)}
   </style>
 </head>
 <body>
 
   <header>
-    <h1 data-lang-key="appName">متتبع الثلاجة</h1>
+    <div class="app-title">
+      <!-- NEW ANIMATED LOGO -->
+      <div id="app-logo">🧊</div>
+      <h1 data-lang-key="appName">متتبع الثلاجة</h1>
+    </div>
   </header>
 
   <div class="container">
     <form id="itemForm">
-      <input type="text" id="name" data-lang-placeholder-key="itemNamePlaceholder" required>
-      <input type="date" id="expiry" required>
-      <!-- NEW CATEGORY SELECTOR -->
-      <select id="category" required></select>
-      <button type="submit" data-lang-key="addBtn">إضافة</button>
+      <div class="form-row">
+        <input type="text" id="name" data-lang-placeholder-key="itemNamePlaceholder" required>
+        <input type="date" id="expiry" required>
+      </div>
+      <div class="form-row">
+        <!-- NEW CATEGORY SELECTOR -->
+        <select id="category">
+            <option value="general" data-lang-key="catGeneral">عام</option>
+            <option value="vegetables" data-lang-key="catVegetables">خضروات</option>
+            <option value="fruits" data-lang-key="catFruits">فواكه</option>
+            <option value="dairy" data-lang-key="catDairy">ألبان</option>
+            <option value="meats" data-lang-key="catMeats">لحوم</option>
+            <option value="drinks" data-lang-key="catDrinks">مشروبات</option>
+        </select>
+        <button type="submit" id="add-item-btn" data-lang-key="addBtn">إضافة</button>
+      </div>
     </form>
 
     <div class="controls">
@@ -114,8 +140,6 @@
           </div>
       </div>
       <input type="text" id="search-bar" data-lang-placeholder-key="searchPlaceholder">
-      <!-- NEW CATEGORY FILTER -->
-      <div id="category-filter"></div>
       <div class="bottom-controls">
         <button onclick="exportData()" data-lang-key="exportBtn">تصدير</button>
         <button onclick="importData()" data-lang-key="importBtn">استيراد</button>
@@ -131,145 +155,177 @@
   </div>
 
   <audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
-  <div class="modal-overlay" id="custom-modal"><!-- Modal content is unchanged --></div>
+  <div class="modal-overlay" id="custom-modal"> <div class="modal-box"> <h3 id="modal-title"></h3> <p id="modal-text"></p> <div id="modal-input-area"></div> <div class="modal-buttons"> <button id="modal-confirm-btn"></button> <button id="modal-cancel-btn" class="btn-secondary"></button> </div> </div> </div>
 
   <script>
     // --- DOM Elements ---
     const form = document.getElementById('itemForm');
     const itemList = document.getElementById('itemList');
     const searchBar = document.getElementById('search-bar');
-    const categorySelect = document.getElementById('category'); // New
-    const categoryFilterContainer = document.getElementById('category-filter'); // New
-    // ... other elements
+    const countDisplay = document.getElementById('countDisplay');
+    const noItemsMessage = document.getElementById('no-items-message');
+    const languageSwitcher = document.getElementById('language-switcher');
     
     // --- State & Data ---
     let items = JSON.parse(localStorage.getItem('fridgeItems')) || [];
-    let currentCategoryFilter = 'all'; // New state for filtering
-
-    // --- NEW: CATEGORY DEFINITIONS ---
-    const categories = {
-        all: { icon: '🍽️', en: 'All', fr: 'Tous', ar: 'الكل' },
-        dairy: { icon: '🥛', en: 'Dairy', fr: 'Laitages', ar: 'ألبان' },
-        meat: { icon: '🥩', en: 'Meat', fr: 'Viande', ar: 'لحوم' },
-        vegetables: { icon: '🥦', en: 'Vegetables', fr: 'Légumes', ar: 'خضروات' },
-        fruits: { icon: '🍓', en: 'Fruits', fr: 'Fruits', ar: 'فواكه' },
-        drinks: { icon: '🥤', en: 'Drinks', fr: 'Boissons', ar: 'مشروبات' },
-        other: { icon: '🥫', en: 'Other', fr: 'Autre', ar: 'أخرى' }
-    };
-
     const translations = {
         'en': {
-            dir: 'ltr', appName: 'Fridge Tracker', /* ... other translations ... */
-            searchPlaceholder: 'Search for items...', category: 'Category'
+            appName: 'Fridge Tracker', itemNamePlaceholder: 'Item name', addBtn: 'Add',
+            exportBtn: 'Export', importBtn: 'Import', clearAllBtn: 'Clear All',
+            totalItems: 'Total: {count}', expiresOn: 'Expires: {date}', removeBtn: 'Remove',
+            noItems: 'Your list is empty!', confirmDeleteAll: 'Are you sure?',
+            confirmDeleteAllTitle: 'Confirm Deletion', importPrompt: 'Paste your saved data here:',
+            importTitle: 'Import Data', importSuccess: 'Data restored!', importError: 'Invalid data.',
+            exportInfo: 'Copy this text and save it safely!', exportTitle: 'Export Data',
+            okBtn: 'OK', cancelBtn: 'Cancel', searchPlaceholder: 'Search for items...',
+            catGeneral: 'General', catVegetables: 'Vegetables', catFruits: 'Fruits',
+            catDairy: 'Dairy', catMeats: 'Meats', catDrinks: 'Drinks'
         },
         'fr': {
-            dir: 'ltr', appName: 'Suivi Frigo', /* ... other translations ... */
-            searchPlaceholder: 'Rechercher...', category: 'Catégorie'
+            appName: 'Suivi Frigo', itemNamePlaceholder: 'Nom de l\'article', addBtn: 'Ajouter',
+            exportBtn: 'Exporter', importBtn: 'Importer', clearAllBtn: 'Tout effacer',
+            totalItems: 'Total : {count}', expiresOn: 'Expire le : {date}', removeBtn: 'Supprimer',
+            noItems: 'Votre liste est vide !', confirmDeleteAll: 'Êtes-vous sûr ?',
+            confirmDeleteAllTitle: 'Confirmer la suppression', importPrompt: 'Collez vos données ici :',
+            importTitle: 'Importer', importSuccess: 'Données restaurées !', importError: 'Données invalides.',
+            exportInfo: 'Copiez ce texte et gardez-le !', exportTitle: 'Exporter',
+            okBtn: 'OK', cancelBtn: 'Annuler', searchPlaceholder: 'Rechercher des articles...',
+            catGeneral: 'Général', catVegetables: 'Légumes', catFruits: 'Fruits',
+            catDairy: 'Produits laitiers', catMeats: 'Viandes', catDrinks: 'Boissons'
         },
         'ar': {
-            dir: 'rtl', appName: 'متتبع الثلاجة', /* ... other translations ... */
-            searchPlaceholder: 'ابحث عن منتج...', category: 'التصنيف'
+            appName: 'متتبع الثلاجة', itemNamePlaceholder: 'اسم المنتج', addBtn: 'إضافة',
+            exportBtn: 'تصدير', importBtn: 'استيراد', clearAllBtn: 'مسح الكل',
+            totalItems: 'الإجمالي: {count}', expiresOn: 'تنتهي في: {date}', removeBtn: 'حذف',
+            noItems: 'قائمتك فارغة!', confirmDeleteAll: 'هل أنت متأكد من الحذف؟',
+            confirmDeleteAllTitle: 'تأكيد الحذف', importPrompt: 'الصق بياناتك المحفوظة هنا:',
+            importTitle: 'استيراد البيانات', importSuccess: 'تم استعادة البيانات!',
+            importError: 'بيانات غير صالحة.', exportInfo: 'انسخ النص واحفظه في مكان آمن!',
+            exportTitle: 'تصدير البيانات', okBtn: 'موافق', cancelBtn: 'إلغاء',
+            searchPlaceholder: 'ابحث عن منتج...', catGeneral: 'عام', catVegetables: 'خضروات',
+            catFruits: 'فواكه', catDairy: 'ألبان', catMeats: 'لحوم', catDrinks: 'مشروبات'
         }
     };
-    // (Add the rest of your existing translations here to keep the code clean)
-    // For brevity, I'm omitting the full translation object again. Just add 'category' key.
-
     let currentLang = localStorage.getItem('language') || 'ar';
-
-    // --- Language & Translation Functions (mostly unchanged) ---
+    const categoryIcons = { general: '📦', vegetables: '🥕', fruits: '🍓', dairy: '🥛', meats: '🥩', drinks: '🥤'};
+    
+    // --- Language Functions ---
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('language', lang);
-        // ... (rest of the function is the same) ...
-        populateCategorySelectors(); // NEW: Update categories on lang change
+        const t = translations[lang];
+        document.documentElement.lang = lang; document.documentElement.dir = t.dir || 'ltr';
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            const key = el.dataset.langKey; if(t[key]) el.textContent = t[key];
+        });
+        document.querySelectorAll('[data-lang-placeholder-key]').forEach(el => {
+            const key = el.dataset.langPlaceholderKey; if(t[key]) el.placeholder = t[key];
+        });
+        languageSwitcher.value = lang;
         renderItems();
     }
-    // ... (t function is the same) ...
-
-    // --- NEW: CATEGORY-RELATED FUNCTIONS ---
-    function populateCategorySelectors() {
-        // Populate the form's dropdown
-        categorySelect.innerHTML = `<option value="" disabled selected>${t('category')}</option>`;
-        Object.keys(categories).forEach(key => {
-            if (key === 'all') return; // Don't add 'All' to the add-item form
-            const option = document.createElement('option');
-            option.value = key;
-            option.textContent = categories[key][currentLang];
-            categorySelect.appendChild(option);
-        });
-
-        // Populate the filter buttons
-        categoryFilterContainer.innerHTML = '';
-        Object.keys(categories).forEach(key => {
-            const button = document.createElement('button');
-            button.className = 'category-btn';
-            button.dataset.category = key;
-            button.textContent = `${categories[key].icon} ${categories[key][currentLang]}`;
-            if (key === currentCategoryFilter) {
-                button.classList.add('active');
-            }
-            button.onclick = () => {
-                currentCategoryFilter = key;
-                // Update active state on buttons
-                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                renderItems();
-            };
-            categoryFilterContainer.appendChild(button);
-        });
-    }
-
-    // --- UI & Rendering (UPDATED) ---
-    function renderItems() {
-      const searchTerm = searchBar.value.toLowerCase();
-      // Apply filters
-      let filteredItems = items
-        .filter(item => item.name.toLowerCase().includes(searchTerm))
-        .filter(item => currentCategoryFilter === 'all' || item.category === currentCategoryFilter);
-
-      // (The rest of the renderItems function is mostly the same, but with one key change)
-      // ...
-      // In the loop, get the icon from the categories object
-      const categoryInfo = categories[item.category] || categories['other'];
-      const icon = categoryInfo.icon;
-      // ...
-      // The rest of the rendering logic remains the same
+    function t(key, replacements = {}) {
+        let text = translations[currentLang][key] || key;
+        for (const placeholder in replacements) { text = text.replace(`{${placeholder}}`, replacements[placeholder]); }
+        return text;
     }
     
-    // --- Core Logic (UPDATED) ---
+    // --- UI & Rendering (NOW WITH CATEGORIES) ---
+    function renderItems() {
+        const searchTerm = searchBar.value.toLowerCase();
+        const filteredItems = items.filter(item => item.name.toLowerCase().includes(searchTerm));
+        
+        itemList.innerHTML = '';
+        if (items.length === 0) {
+            noItemsMessage.style.display = 'block';
+            countDisplay.textContent = t('totalItems', {count: 0});
+            return;
+        }
+        noItemsMessage.style.display = 'none';
+        countDisplay.textContent = t('totalItems', {count: filteredItems.length});
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Group items by category
+        const groupedItems = filteredItems.reduce((acc, item) => {
+            const category = item.category || 'general';
+            if (!acc[category]) {
+                acc[category] = [];
+            }
+            acc[category].push(item);
+            return acc;
+        }, {});
+
+        // Sort categories and render them
+        Object.keys(groupedItems).sort().forEach(category => {
+            const categoryContainer = document.createElement('div');
+            categoryContainer.className = 'category-container';
+            categoryContainer.innerHTML = `
+                <div class="category-header">
+                    <span class="category-icon">${categoryIcons[category] || '📦'}</span>
+                    <span class="category-title">${t('cat' + category.charAt(0).toUpperCase() + category.slice(1))}</span>
+                </div>
+            `;
+            
+            groupedItems[category].sort((a, b) => new Date(a.expiry) - new Date(b.expiry)).forEach(item => {
+                const expiry = new Date(item.expiry);
+                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+                let status = 'green', icon = '🥬';
+                if (diffDays < 3 && diffDays >= 0) { status = 'orange'; icon = '⚠️'; document.getElementById('alertSound').play(); }
+                else if (diffDays < 0) { status = 'red'; icon = '⛔'; }
+                
+                const originalIndex = items.findIndex(originalItem => originalItem === item);
+                const div = document.createElement('div');
+                div.className = `item ${status}`;
+                div.innerHTML = `<span><span class="icon">${icon}</span>${item.name} — ${t('expiresOn', {date: item.expiry})}</span> <button data-index="${originalIndex}">${t('removeBtn')}</button>`;
+                categoryContainer.appendChild(div);
+            });
+            itemList.appendChild(categoryContainer);
+        });
+    }
+    
+    // --- Core Logic Functions ---
     function addItem(e) {
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
       const expiry = document.getElementById('expiry').value;
-      const category = categorySelect.value; // NEW
-      if (!name || !expiry || !category) return; // NEW: Check for category
-      items.push({ name, expiry, category }); // NEW: Add category to item object
+      const category = document.getElementById('category').value; // Get category
+      if (!name || !expiry) return;
+      items.push({ name, expiry, category }); // Save category with item
       localStorage.setItem('fridgeItems', JSON.stringify(items));
       renderItems();
       form.reset();
-      categorySelect.value = ""; // Reset select
     }
-
-    // --- Initialization (UPDATED) ---
+    itemList.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON' && e.target.dataset.index) {
+            const index = parseInt(e.target.dataset.index, 10);
+            items.splice(index, 1);
+            localStorage.setItem('fridgeItems', JSON.stringify(items));
+            renderItems();
+        }
+    });
+    function confirmClearAll() { showCustomConfirm(t('confirmDeleteAll'), t('confirmDeleteAllTitle'), (confirmed) => { if (confirmed) { items = []; localStorage.removeItem('fridgeItems'); renderItems(); } }); }
+    function exportData(){if(items.length===0)return;const dataString=JSON.stringify(items,null,2);showCustomAlert(t('exportInfo'),t('exportTitle'),dataString);}
+    function importData(){showCustomPrompt(t('importPrompt'),t('importTitle'),(dataString)=>{if(dataString){try{const importedItems=JSON.parse(dataString);if(Array.isArray(importedItems)){items=importedItems;localStorage.setItem('fridgeItems',JSON.stringify(items));renderItems();showCustomAlert(t('importSuccess'),t('appName'));}else{throw new Error('Not an array');}}catch(error){showCustomAlert(t('importError'),'Error');}}});}
+    
+    // --- Custom Modal Functions (Unchanged) ---
+    const modal = document.getElementById('custom-modal'); const modalTitle = document.getElementById('modal-title'); const modalText = document.getElementById('modal-text'); const modalInputArea = document.getElementById('modal-input-area'); const confirmBtn = document.getElementById('modal-confirm-btn'); const cancelBtn = document.getElementById('modal-cancel-btn');
+    function showCustomModal(title,text,type='alert',content='',callback=null){modalTitle.textContent=title;modalText.textContent=text;modalInputArea.innerHTML='';if(type==='prompt'||(type==='alert'&&content)){const inputEl=document.createElement('textarea');if(type==='prompt')inputEl.placeholder=t('importPrompt');else{inputEl.value=content;inputEl.readOnly=true;}modalInputArea.appendChild(inputEl);}confirmBtn.textContent=t('okBtn');cancelBtn.textContent=t('cancelBtn');cancelBtn.style.display=(type==='alert')?'none':'inline-block';modal.style.display='flex';confirmBtn.onclick=()=>{const inputValue=modalInputArea.querySelector('textarea')?.value;modal.style.display='none';if(callback)callback(inputValue||true);};cancelBtn.onclick=()=>{modal.style.display='none';if(callback)callback(false);};}
+    function showCustomAlert(text, title, content = '') { showCustomModal(title, text, 'alert', content); } function showCustomConfirm(text, title, callback) { showCustomModal(title, text, 'confirm', '', callback); } function showCustomPrompt(text, title, callback) { showCustomModal(title, text, 'prompt', '', callback); }
+    
+    // --- Initialization ---
     function initialize() {
-      // ... (existing initialization code) ...
-      // ... (language switcher, theme toggler, etc.) ...
-      populateCategorySelectors(); // NEW: Initial population of categories
-      form.addEventListener('submit', addItem);
-      searchBar.addEventListener('input', renderItems);
-      setLanguage(currentLang);
+        Object.keys(translations).forEach(lang => { const option = document.createElement('option'); option.value = lang; option.textContent = lang.toUpperCase(); languageSwitcher.appendChild(option); });
+        languageSwitcher.addEventListener('change', (e) => setLanguage(e.target.value));
+        document.getElementById('themeToggle').addEventListener('click', () => { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); });
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+        form.addEventListener('submit', addItem);
+        searchBar.addEventListener('input', renderItems);
+        setLanguage(currentLang);
     }
-
-    // --- ALL OTHER FUNCTIONS (delete, modal, import/export) remain the same ---
-    // (Copy and paste the rest of the JS functions from your previous complete code here)
-
     initialize();
   </script>
 
-  <!-- Make sure to include the full JS from the previous step, including modal functions etc. -->
-  <script>
-    // Paste all the other JS functions here that I've omitted for brevity
-    // This includes: removeItem, confirmClearAll, all modal functions, import/export, etc.
-  </script>
 </body>
 </html>
